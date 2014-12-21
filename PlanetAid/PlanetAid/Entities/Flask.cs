@@ -25,7 +25,7 @@ namespace PlanetAid.Entities
        public void update()
        {
 
-           position += new Vector2(20, 0);
+           position += new Vector2(30, 0);
        }
 
        public void Draw(SpriteBatch sb)
