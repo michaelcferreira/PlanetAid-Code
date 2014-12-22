@@ -23,7 +23,8 @@ namespace PlanetAid
         private Texture2D railgun;
         private Texture2D flaskImg;
         private float gunRotation;
-        Flask flask; 
+        private bool canShoot;
+        Flask flask;
 
         public Game1()
         {
@@ -81,22 +82,29 @@ namespace PlanetAid
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-          //Railgun rotation and limitations
+            //Railgun rotation and limitations
             gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10);
+            canShoot = true;
             if (gunRotation <= -.523)
+            {
                 gunRotation = -.523f;
+                canShoot = false;
+            }
+
 
             if (gunRotation >= .174)
+            {
                 gunRotation = .174f;
+                canShoot = false;
+            }
 
             IsMouseVisible = true;
 
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-               flask = new Flask(new Vector2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10),
-                    new Vector2(170, 170),
-                    flaskImg);
+                if (canShoot)
+                    flask = new Flask(new Vector2(170, 170), flaskImg);
             }
             if (flask != null) flask.update();
 
@@ -116,7 +124,7 @@ namespace PlanetAid
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-            spriteBatch.Draw(railgun, new Rectangle(70, 240, railgun.Width / 4, railgun.Height / 4), null, Color.White,gunRotation, new Vector2(195, 235), SpriteEffects.None, 0);
+            spriteBatch.Draw(railgun, new Rectangle(70, 240, railgun.Width / 4, railgun.Height / 4), null, Color.White, gunRotation, new Vector2(195, 235), SpriteEffects.None, 0);
             if (flask != null) flask.Draw(spriteBatch);
             spriteBatch.End();
 
