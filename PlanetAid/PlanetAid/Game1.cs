@@ -103,12 +103,10 @@ namespace PlanetAid
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (canShoot)
-                    flask = new Flask(new Vector2(170, 170), flaskImg);
+                if (canShoot && Mouse.GetState().X > 170)
+                    flask = new Flask(new Vector2(70, 240), flaskImg);
             }
             if (flask != null) flask.update();
-
-
 
             // TODO: Add your update logic here
 
