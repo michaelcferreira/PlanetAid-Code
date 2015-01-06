@@ -14,7 +14,7 @@ namespace PlanetAid.Entities
         private Vector2 velocity;
         private Vector2 position;
         private Texture2D flaskImg;
-        private int speed = 4;
+        private int speed = 5;
 
         public Flask(Vector2 pos, Texture2D img)
         {
@@ -29,13 +29,9 @@ namespace PlanetAid.Entities
         {
             position += velocity * speed;
         }
-
         public void Draw(SpriteBatch sb)
         {
             sb.Draw(flaskImg, new Rectangle((int)position.X, (int)position.Y, flaskImg.Width / 8, flaskImg.Height / 8), Color.White);
-
         }
-
-
     }
 }
