@@ -7,5 +7,6 @@ namespace PlanetAid.Entities
 {
     class Sprite
     {
+
     }
 }

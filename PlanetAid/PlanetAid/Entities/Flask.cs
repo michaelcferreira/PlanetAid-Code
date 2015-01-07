@@ -19,7 +19,7 @@ namespace PlanetAid.Entities
         public Rectangle myspace
         {
         get{
-            Rectangle myr = new Rectangle((int)position.X, (int)position.Y, flaskImg.Width / 16, flaskImg.Height / 16);
+            Rectangle myr = new Rectangle((int)position.X, (int)position.Y, flaskImg.Width, flaskImg.Height);
             return myr;
     }
     }
@@ -28,7 +28,7 @@ namespace PlanetAid.Entities
         {
             flaskImg = img;
             Vector2 vel;
-            position = new Vector2(pos.X - flaskImg.Width / 8 / 2, pos.Y - flaskImg.Height / 8 / 2 - 35);
+            position = new Vector2(pos.X - flaskImg.Width / 16 , pos.Y - flaskImg.Height / 16  - 50);
             vel = new Vector2(Mouse.GetState().X - position.X + (flaskImg.Width / 8 / 2), Mouse.GetState().Y - position.Y - (flaskImg.Height / 8 / 2));
             vel.Normalize();
             velocity = vel;
@@ -40,7 +40,7 @@ namespace PlanetAid.Entities
         public void Draw(SpriteBatch sb)
         {
              
-            sb.Draw(flaskImg, new Rectangle((int)position.X, (int)position.Y, flaskImg.Width / 8, flaskImg.Height / 8), Color.White);
+            sb.Draw(flaskImg, new Rectangle((int)position.X, (int)position.Y, flaskImg.Width, flaskImg.Height), Color.White);
 
         }
     }

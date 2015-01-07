@@ -26,9 +26,10 @@ namespace PlanetAid
         private float gunRotation;
         private bool canShoot;
         private bool collision = false;
-        private SpriteFont font1;
+        private SpriteFont endFont;
         Flask flask;
         private Rectangle planetbounds;
+
 
         public Game1()
         {
@@ -39,12 +40,7 @@ namespace PlanetAid
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+        
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
@@ -52,10 +48,7 @@ namespace PlanetAid
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+       
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -64,25 +57,18 @@ namespace PlanetAid
             railgun = Content.Load<Texture2D>("railgun");
             flaskImg = Content.Load<Texture2D>("Flask");
             planetImg = Content.Load<Texture2D>("Planet-1");
-            font1 = Content.Load<SpriteFont>("Courier New");
+            endFont = Content.Load<SpriteFont>("Courier New");
             planetbounds = new Rectangle(700, 200, planetImg.Width, planetImg.Height);
             // TODO: use this.Content to load your game content here
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
+        
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
@@ -98,7 +84,6 @@ namespace PlanetAid
                 gunRotation = -.523f;
                 canShoot = false;
             }
-
 
             if (gunRotation >= .174)
             {
@@ -131,10 +116,7 @@ namespace PlanetAid
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+       
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -148,7 +130,7 @@ namespace PlanetAid
             }
 
             else
-              spriteBatch.DrawString(font1,"Congratulations",new Vector2(550, 300),Color.BlanchedAlmond);
+              spriteBatch.DrawString(endFont,"Congratulations",new Vector2(550, 300),Color.BlanchedAlmond);
 
             
             spriteBatch.End();
