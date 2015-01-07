@@ -22,9 +22,13 @@ namespace PlanetAid
         private Texture2D background;
         private Texture2D railgun;
         private Texture2D flaskImg;
+        private Texture2D planetImg;
         private float gunRotation;
         private bool canShoot;
+        private bool collision = false;
+        private SpriteFont font1;
         Flask flask;
+        private Rectangle planetbounds;
 
         public Game1()
         {
@@ -44,7 +48,7 @@ namespace PlanetAid
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
+            
             base.Initialize();
         }
 
@@ -59,6 +63,9 @@ namespace PlanetAid
             background = Content.Load<Texture2D>("background");
             railgun = Content.Load<Texture2D>("railgun");
             flaskImg = Content.Load<Texture2D>("Flask");
+            planetImg = Content.Load<Texture2D>("Planet-1");
+            font1 = Content.Load<SpriteFont>("Courier New");
+            planetbounds = new Rectangle(700, 200, planetImg.Width, planetImg.Height);
             // TODO: use this.Content to load your game content here
         }
 
@@ -79,7 +86,8 @@ namespace PlanetAid
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            KeyboardState CurrentKeyboardState = Keyboard.GetState();
+            if (CurrentKeyboardState.IsKeyDown(Keys.Escape))
                 this.Exit();
 
             //Railgun rotation and limitations
@@ -99,17 +107,27 @@ namespace PlanetAid
             }
 
             IsMouseVisible = true;
-
+            
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 if (canShoot && Mouse.GetState().X > 170)
+                {
+                   
                     flask = new Flask(new Vector2(70, 240), flaskImg);
+                }
+                
             }
-            if (flask != null) flask.update();
+            if (flask != null)
+            {
+                flask.update();
 
-            // TODO: Add your update logic here
-
+                // TODO: Add your update logic here
+                if (flask.myspace.Intersects(planetbounds))
+                {
+                    collision = true;
+                }
+            }
             base.Update(gameTime);
         }
 
@@ -122,13 +140,23 @@ namespace PlanetAid
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
-            spriteBatch.Draw(railgun, new Rectangle(70, 240, railgun.Width / 4, railgun.Height / 4), null, Color.White, gunRotation, new Vector2(195, 235), SpriteEffects.None, 0);
-            if (flask != null) flask.Draw(spriteBatch);
+            if (collision == false)
+            {
+                spriteBatch.Draw(railgun, new Rectangle(70, 240, railgun.Width / 4, railgun.Height / 4), null, Color.White, gunRotation, new Vector2(195, 235), SpriteEffects.None, 0);
+                spriteBatch.Draw(planetImg, new Rectangle(700, 200, planetImg.Width, planetImg.Height), null, Color.White, 0, new Vector2(0, 0), SpriteEffects.None, 0);
+                if (flask != null) flask.Draw(spriteBatch);
+            }
+
+            else
+              spriteBatch.DrawString(font1,"Congratulations",new Vector2(550, 300),Color.BlanchedAlmond);
+
+            
             spriteBatch.End();
 
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }
+
     }
 }

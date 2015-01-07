@@ -9,12 +9,20 @@ using System.Text;
 
 namespace PlanetAid.Entities
 {
-    class Flask
+    public class Flask
     {
-        private Vector2 velocity;
-        private Vector2 position;
+        public Vector2 velocity;
+        public Vector2 position;
         private Texture2D flaskImg;
         private int speed = 5;
+        public bool Visible { get; set; }
+        public Rectangle myspace
+        {
+        get{
+            Rectangle myr = new Rectangle((int)position.X, (int)position.Y, flaskImg.Width / 16, flaskImg.Height / 16);
+            return myr;
+    }
+    }
 
         public Flask(Vector2 pos, Texture2D img)
         {
@@ -31,7 +39,9 @@ namespace PlanetAid.Entities
         }
         public void Draw(SpriteBatch sb)
         {
+             
             sb.Draw(flaskImg, new Rectangle((int)position.X, (int)position.Y, flaskImg.Width / 8, flaskImg.Height / 8), Color.White);
+
         }
     }
 }
