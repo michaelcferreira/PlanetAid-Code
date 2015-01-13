@@ -9,39 +9,52 @@ using System.Text;
 
 namespace PlanetAid.Entities
 {
-    public class Flask
+    public class Flask : Sprite
     {
-        public Vector2 velocity;
-        public Vector2 position;
-        private Texture2D flaskImg;
-        private int speed = 5;
+        private int speed;
+        private int mass;
         public bool Visible { get; set; }
-        public Rectangle myspace
+        public enum Type
         {
-        get{
-            Rectangle myr = new Rectangle((int)position.X, (int)position.Y, flaskImg.Width, flaskImg.Height);
-            return myr;
-    }
-    }
+            Flasky,
+            MonoFlask,
+            FatoFlask
+        }
 
-        public Flask(Vector2 pos, Texture2D img)
+        public Flask(Type flaskType)
         {
-            flaskImg = img;
+            if (flaskType == Type.Flasky)
+            {
+                ImgName = "Flasky";
+                speed = 50;
+            }
+            else if (flaskType == Type.MonoFlask)
+            {
+                ImgName = "MonoFlask";
+                speed = 70;
+            }
+            else if (flaskType == Type.FatoFlask)
+            {
+                ImgName = "FatoFlask";
+                speed = 80;
+            }
+        }
+
+        public override void Load(ContentManager content)
+        {
+            Img = content.Load<Texture2D>(ImgName);
+
+            Vector2 pos = new Vector2(150, 375);
             Vector2 vel;
-            position = new Vector2(pos.X - flaskImg.Width / 16 , pos.Y - flaskImg.Height / 16  - 50);
-            vel = new Vector2(Mouse.GetState().X - position.X + (flaskImg.Width / 8 / 2), Mouse.GetState().Y - position.Y - (flaskImg.Height / 8 / 2));
+            position = new Vector2(pos.X - Img.Width / 16, pos.Y - Img.Height / 16 - 50);
+            vel = new Vector2(Mouse.GetState().X - position.X - (Img.Width / 2), Mouse.GetState().Y - position.Y - (Img.Height / 2));
             vel.Normalize();
             velocity = vel;
         }
-        public void update()
-        {
-            position += velocity * speed;
-        }
-        public void Draw(SpriteBatch sb)
-        {
-             
-            sb.Draw(flaskImg, new Rectangle((int)position.X, (int)position.Y, flaskImg.Width, flaskImg.Height), Color.White);
 
+        public override void Update(TimeSpan ts)
+        {
+            position += velocity * speed * (float)ts.TotalSeconds;
         }
     }
 }
