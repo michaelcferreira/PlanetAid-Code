@@ -14,6 +14,13 @@ namespace PlanetAid
 {
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        enum GameState
+        {
+            StartMenu,
+            Playing,
+            Paused
+        }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D background;
@@ -24,9 +31,11 @@ namespace PlanetAid
         private bool canShoot;
         private bool collision = false;
         private SpriteFont endFont;
-        Flask flask;
         private Rectangle planetbounds;
+        Flask flask;
         Planet planet;
+        Gun gun;
+        private GameState gameState;
 
         public Game1()
         {
@@ -41,6 +50,9 @@ namespace PlanetAid
         {
             // TODO: Add your initialization logic here
             planet = new Planet(Planet.Type.Planet1);
+            gun = new Gun();
+
+            gameState = GameState.StartMenu;
             base.Initialize();
         }
 
@@ -50,7 +62,7 @@ namespace PlanetAid
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             background = Content.Load<Texture2D>("background");
-            SpaceStation = Content.Load<Texture2D>("SpaceStation");
+            gun.Load(Content);
             planet.Load(Content);
             endFont = Content.Load<SpriteFont>("Courier New");
         }
@@ -67,28 +79,13 @@ namespace PlanetAid
             // Allows the game to exit
             KeyboardState CurrentKeyboardState = Keyboard.GetState();
             if (CurrentKeyboardState.IsKeyDown(Keys.Escape))
-                this.Exit();
-
-            // Railgun rotation and limitations
-            gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10);
-            canShoot = true;
-            if (gunRotation <= -.523)
-            {
-                gunRotation = -.523f;
-                canShoot = false;
-            }
-
-            if (gunRotation >= .174)
-            {
-                gunRotation = .174f;
-                canShoot = false;
-            }
+                this.Exit();          
 
             IsMouseVisible = true;
 
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                if (canShoot && Mouse.GetState().X > 170)
+                if (gun.canShoot && Mouse.GetState().X > 170)
                 {
                     flask = new Flask(Flask.Type.Flasky);
                     flask.Load(Content);
@@ -104,6 +101,7 @@ namespace PlanetAid
                 }
             }
 
+            gun.Update(gameTime.ElapsedGameTime);
             planet.Update(gameTime.ElapsedGameTime);
 
             base.Update(gameTime);
@@ -117,7 +115,7 @@ namespace PlanetAid
             spriteBatch.Draw(background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
             if (collision == false)
             {
-                spriteBatch.Draw(SpaceStation, new Rectangle(180, 340, SpaceStation.Width, SpaceStation.Height), null, Color.White, gunRotation, new Vector2(176, 176), SpriteEffects.None, 0);
+                gun.Draw(spriteBatch);
                 planet.Draw(spriteBatch);
                 if (flask != null) flask.Draw(spriteBatch);
             }
