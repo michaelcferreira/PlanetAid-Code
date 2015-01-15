@@ -90,7 +90,7 @@ namespace PlanetAid
             {
                 if (canShoot && Mouse.GetState().X > 170)
                 {
-                    flask = new Flask(Flask.Type.FatoFlask);
+                    flask = new Flask(Flask.Type.Flasky);
                     flask.Load(Content);
                 }
             }

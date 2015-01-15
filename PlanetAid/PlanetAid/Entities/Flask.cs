@@ -11,7 +11,7 @@ namespace PlanetAid.Entities
 {
     public class Flask : Sprite
     {
-        private int speed;
+        private Vector2 speed;
         private int mass;
         public bool Visible { get; set; }
         public enum Type
@@ -20,23 +20,24 @@ namespace PlanetAid.Entities
             MonoFlask,
             FatoFlask
         }
+        Vector2 v;
 
         public Flask(Type flaskType)
         {
             if (flaskType == Type.Flasky)
             {
-                ImgName = "Flasky";
-                speed = 50;
+                ImgName = "Flask";
+                speed = new Vector2(300,300);
             }
             else if (flaskType == Type.MonoFlask)
             {
                 ImgName = "MonoFlask";
-                speed = 70;
+                speed = new Vector2(50, 50);
             }
             else if (flaskType == Type.FatoFlask)
             {
                 ImgName = "FatoFlask";
-                speed = 80;
+                speed = new Vector2(50,50);
             }
         }
 
@@ -50,11 +51,13 @@ namespace PlanetAid.Entities
             vel = new Vector2(Mouse.GetState().X - position.X - (Img.Width / 2), Mouse.GetState().Y - position.Y - (Img.Height / 2));
             vel.Normalize();
             velocity = vel;
+            v = velocity * speed;
         }
 
         public override void Update(TimeSpan ts)
         {
-            position += velocity * speed * (float)ts.TotalSeconds;
+            v.Y += 2f;
+            position += v * (float)ts.TotalSeconds;
         }
     }
 }
