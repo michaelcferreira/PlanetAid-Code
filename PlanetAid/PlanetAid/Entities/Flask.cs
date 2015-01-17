@@ -20,7 +20,6 @@ namespace PlanetAid.Entities
             MonoFlask,
             FatoFlask
         }
-        Vector2 v;
 
         public Flask(Type flaskType)
         {
@@ -46,18 +45,17 @@ namespace PlanetAid.Entities
             Img = content.Load<Texture2D>(ImgName);
 
             Vector2 pos = new Vector2(150, 375);
-            Vector2 vel;
+            Vector2 direction;
             position = new Vector2(pos.X - Img.Width / 16, pos.Y - Img.Height / 16 - 50);
-            vel = new Vector2(Mouse.GetState().X - position.X - (Img.Width / 2), Mouse.GetState().Y - position.Y - (Img.Height / 2));
-            vel.Normalize();
-            velocity = vel;
-            v = velocity * speed;
+            direction = new Vector2(Mouse.GetState().X - position.X - (Img.Width / 2), Mouse.GetState().Y - position.Y - (Img.Height / 2));
+            direction.Normalize();
+            velocity = direction * speed;
         }
 
         public override void Update(TimeSpan ts)
         {
-            v.Y += 2f;
-            position += v * (float)ts.TotalSeconds;
+            velocity.Y += 2f;
+            position += velocity * (float)ts.TotalSeconds;
         }
     }
 }

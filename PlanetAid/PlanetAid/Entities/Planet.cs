@@ -45,8 +45,10 @@ namespace PlanetAid.Entities
 
         public override void Update(TimeSpan ts)
         {
-            rotation += rotationAmmount * ((float)Math.PI / 180) * (float)ts.TotalSeconds;
+            //ADD YOUR UPDATE LOGIC HERE aka gravity shit
 
+            //Gun rotation and limitations
+            rotation += rotationAmmount * ((float)Math.PI / 180) * (float)ts.TotalSeconds;
             if (rotatingLeft)
             {
                 if (rotation <= 0 * ((float)Math.PI / 180))

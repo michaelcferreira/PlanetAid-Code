@@ -22,15 +22,14 @@ namespace PlanetAid.Entities
         public override void Update(TimeSpan ts)
         {
             // Railgun rotation and limitations
-            gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10);
+            gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10);  
             canShoot = true;
             if (gunRotation <= -.523)
             {
                 gunRotation = -.523f;
                 canShoot = false;
             }
-
-            if (gunRotation >= .174)
+           if (gunRotation >= .174)
             {
                 gunRotation = .174f;
                 canShoot = false;
