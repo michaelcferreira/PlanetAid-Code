@@ -21,8 +21,8 @@ namespace PlanetAid
             imageName = name;
             bRect.X = x;
             bRect.Y = y;
-            bRect.Width = 300/2;
-            bRect.Height = 80/2;
+            bRect.Width = 150;
+            bRect.Height =40;
             clicked = false;
         }
 

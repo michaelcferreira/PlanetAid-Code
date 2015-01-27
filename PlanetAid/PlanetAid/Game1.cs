@@ -27,13 +27,16 @@ namespace PlanetAid
         private Texture2D title;
         private bool collision = false;
         private SpriteFont endFont;
+        private bool wasPressed = false;
+        private List<Flask> flaskList;
+        private int currentFlask=0;
+        private GameState gameState;
         Flask flask;
         Planet planet;
+        Planet targetPlanet;
         Gun gun;
-        private GameState gameState;
         Button playButton, levelButton, quitButton;
         Song menuSong;
-        Song playSong;
 
         public Game1()
         {
@@ -48,6 +51,7 @@ namespace PlanetAid
         {
             // TODO: Add your initialization logic here
             planet = new Planet(Planet.Type.Planet1);
+            targetPlanet = new Planet (Planet.Type.Planet2);
             gun = new Gun();
             IsMouseVisible = true;
 
@@ -55,6 +59,17 @@ namespace PlanetAid
             playButton = new Button(GraphicsDevice.Viewport.Width / 2 - 150/2, GraphicsDevice.Viewport.Height / 2, "PlayButton");
             levelButton = new Button(GraphicsDevice.Viewport.Width / 2 - 150 / 2, playButton.bRect.Bottom + 10, "LevelButton");
             quitButton = new Button(GraphicsDevice.Viewport.Width / 2 - 150 / 2, levelButton.bRect.Bottom + 10, "QuitButton");
+
+            flaskList = new List<Flask>();
+
+            Flask newFlask;
+            newFlask = new Flask(Flask.Type.Flasky);
+            flaskList.Add(newFlask);
+            newFlask = new Flask(Flask.Type.FatoFlask);
+            flaskList.Add(newFlask);
+            newFlask = new Flask(Flask.Type.MonoFlask);
+            flaskList.Add(newFlask);
+
 
             gameState = GameState.StartMenu;
             base.Initialize();
@@ -68,8 +83,14 @@ namespace PlanetAid
             background = Content.Load<Texture2D>("background");
             gun.Load(Content);
             planet.Load(Content);
+            targetPlanet.Load(Content);
             endFont = Content.Load<SpriteFont>("Courier New");
             title = Content.Load<Texture2D>("Title");
+
+            foreach (Flask flask in flaskList)
+            {
+                flask.Load(Content);
+            }
 
             // Buttons
             playButton.Load(Content);
@@ -78,7 +99,6 @@ namespace PlanetAid
 
             //Songs
             menuSong = Content.Load<Song>("MenuSong");
-            playSong = Content.Load<Song>("PlaySong");
         }
 
 
@@ -102,9 +122,10 @@ namespace PlanetAid
                 levelButton.Update();
                 quitButton.Update();
 
-                if (playButton.clicked)
+                if (playButton.clicked && wasPressed==false)
                 {
                     MediaPlayer.Stop();
+                    wasPressed = true;
                     gameState = GameState.Playing;
                 }
                 if (quitButton.clicked)
@@ -117,33 +138,63 @@ namespace PlanetAid
 
             if (gameState == GameState.Playing)
             {
+                // Music
                 if (MediaPlayer.State != MediaState.Playing)
-                {
-                    MediaPlayer.Play(playSong);
+                {   
                     MediaPlayer.Volume = 0.02f;
                     MediaPlayer.IsRepeating = true;
                 }
 
-                if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                //Shooting
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed && wasPressed==false)
                 {
                     if (gun.canShoot && Mouse.GetState().X > 170)
                     {
-                        flask = new Flask(Flask.Type.Flasky);
-                        flask.Load(Content);
+                        flask = flaskList[currentFlask];
+                        flask.velocity = Vector2.Zero;
+                        flask.direction = new Vector2(Mouse.GetState().X - flask.position.X - (flask.Img.Width / 2), Mouse.GetState().Y - flask.position.Y - (flask.Img.Height / 2));
+                        flask.position = new Vector2(150, 290);
+                        flask.direction.Normalize();
+                        currentFlask++;
+                        gun.canShoot = false;
+                        if (currentFlask >= 3)
+                        {
+                            currentFlask = 0;
+                        }
                     }
+                    wasPressed = true;
                 }
+
+                if (Mouse.GetState().LeftButton == ButtonState.Released && wasPressed == true)
+                {
+                    wasPressed = false;
+                }
+
+                //Collisions and Gravity Fields
                 if (flask != null)
                 {
+                    if (GraphicsDevice.Viewport.Bounds.Contains(flask.myspace) == false)
+                        gun.canShoot = true;
+
+                    if (Vector2.Distance(flask.position, planet.position) < 200)
+                    {
+                        Vector2 direction = new Vector2(planet.myspace.Center.X - flask.myspace.Center.X, planet.myspace.Center.Y - flask.myspace.Center.Y);
+                        direction.Normalize();
+                        direction *= 5;
+                        flask.velocity += direction;
+                    }
                     flask.Update(gameTime.ElapsedGameTime);
 
-                    if (flask.myspace.Intersects(planet.myspace))
+                    if (Vector2.Distance(new Vector2(flask.myspace.Center.X, flask.myspace.Center.Y), new Vector2(planet.myspace.Center.X, planet.myspace.Center.Y)) < 95)
                     {
-                        collision = true;
+                        if (planet.isTarget == true)
+                        {
+                            collision = true;
+                        }
+                        
                     }
                 }
 
-                //Vector2 distance = new Vector2(planet.origin.X-flask.origin.X,planet.origin.Y-flask.origin.Y);
-               // Vector2 length = distance;
 
                 gun.Update(gameTime.ElapsedGameTime);
                 planet.Update(gameTime.ElapsedGameTime);
@@ -175,6 +226,7 @@ namespace PlanetAid
                 {
                     gun.Draw(spriteBatch);
                     planet.Draw(spriteBatch);
+                    targetPlanet.Draw(spriteBatch);
                     if (flask != null) flask.Draw(spriteBatch);
                 }
                 else
