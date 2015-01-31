@@ -40,14 +40,16 @@ namespace PlanetAid
         public int n_level = 0;
         Flask flask;
         Gun gun;
+        Song menuSong;
+        SoundEffect clickSound;
+        SoundEffect crashingSound;
+        SoundEffect flaskSound;
+        SoundEffect flaskLostSound;
+        MouseState oldMouseState;
         Button playButton, quitButton, pauseButton,
                 menuButton, retryButton, nextButton,
                 nivel1Button, nivel2Button, nivel3Button,
                 nivel4Button, nivel5Button, nivel6Button;
-        Song menuSong;
-        SoundEffect clickSound;
-        SoundEffect crashingSound;
-        MouseState oldMouseState;
 
 
         public Game1()
@@ -205,10 +207,12 @@ namespace PlanetAid
             //GameOver Elements
             endFont = Content.Load<SpriteFont>("Courier New");
 
-            // Songs
+            // Songs & Effects
             menuSong = Content.Load<Song>("MenuSong");
             clickSound = Content.Load<SoundEffect>("SoundEffects/ClickSound");
             crashingSound = Content.Load<SoundEffect>("SoundEffects/CrashingSound");
+            flaskSound = Content.Load<SoundEffect>("SoundEffects/FlaskSound");
+            flaskLostSound = Content.Load<SoundEffect>("SoundEffects/FlaskLostSound");
 
         }
 
@@ -252,7 +256,8 @@ namespace PlanetAid
                 quitButton.Update();
             }
 
-            //Updating the game while in Level Menu
+            // Updating the game while in LEVEL MENU and so it means that it is testing
+            // if the buttons are clicked and if so it changes the game state and the level
             if (gameState == GameState.LevelMenu)
             {
                 nivel1Button.Update();
@@ -315,16 +320,21 @@ namespace PlanetAid
             // Updating the game while in Playing, Pause and GameOver
             if (gameState == GameState.Playing)
             {
+                // In Pause Menu
                 if (isPaused == true)
                 {
+                    // It checks if the pause is clicked to go back to the playing state
                     if (pauseButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
                     {
                         isPaused = false;
                         pauseButton.clicked = false;
                     }
                 }
+
+                // In Playing Mode
                 else
                 {
+                    // It checks if the pause is clicked to go to the pause menu
                     if (pauseButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
                     {
                         isPaused = true;
@@ -353,6 +363,7 @@ namespace PlanetAid
                             gun.canShoot = false;
                             flask.visible = true;
                             flask.rotatito = 2;
+                            flaskSound.Play(1,0.6f,0);
                             if (currentFlask >= 3)
                             {
                                 currentFlask = 0;
@@ -367,6 +378,7 @@ namespace PlanetAid
                         //Shoot enabled when flask reaches screen bounds
                         if (GraphicsDevice.Viewport.Bounds.Contains(flask.myspace) == false)
                         {
+                            flaskLostSound.Play(1,0.3f,0);
                             gun.canShoot = true;
                             flask.visible = false;
                         }
@@ -396,9 +408,10 @@ namespace PlanetAid
                     foreach (Planet p in currentLevel.planetList)
                         p.Update(gameTime.ElapsedGameTime);
                 }
+
                 if (IsFinished == true)
                 {
-
+                   
                 }
                 pauseButton.Update();
 
