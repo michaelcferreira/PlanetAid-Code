@@ -14,15 +14,16 @@ namespace PlanetAid
         private Texture2D image;
         private string imageName;
         public Rectangle bRect;
-        public bool clicked;
+        public bool clicked=false;
+        public bool selectInstance=false;
 
         public Button(int x, int y, string name)
         {
             imageName = name;
             bRect.X = x;
             bRect.Y = y;
-            bRect.Width = 150;
-            bRect.Height =40;
+            bRect.Width = 100;
+            bRect.Height =100;
             clicked = false;
         }
 
@@ -37,6 +38,8 @@ namespace PlanetAid
             Rectangle clickArea = new Rectangle(mouse.X, mouse.Y, 1, 1);
             if (clickArea.Intersects(bRect) && mouse.LeftButton == ButtonState.Pressed)
                 clicked = true;
+            if (clickArea.Intersects(bRect)) 
+                selectInstance = true;
         }
 
         public void Draw(SpriteBatch sb)

@@ -11,10 +11,13 @@ namespace PlanetAid.Entities
     public class Sprite
     {
         public Texture2D Img;
+        public float rotation = 0;
         public string ImgName;
         public Vector2 position;
         public Vector2 velocity;
         public Vector2 origin;
+        public Color color=Color.White;
+        public bool visible=true;
         public Rectangle myspace
         {
             get
@@ -37,7 +40,10 @@ namespace PlanetAid.Entities
         }
         public virtual void Draw(SpriteBatch sb)
         {
-            sb.Draw(Img, new Rectangle((int)position.X, (int)position.Y, Img.Width, Img.Height), Color.White);
+            if (visible == true)
+            {
+                sb.Draw(Img, new Rectangle((int)position.X, (int)position.Y, Img.Width, Img.Height), null, color, rotation, origin, SpriteEffects.None, 0);
+            }
         }
     }
 }

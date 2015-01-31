@@ -14,23 +14,24 @@ namespace PlanetAid.Entities
         private float gunRotation;
         public bool canShoot;
 
+
         public Gun()
         {
-            ImgName = "SpaceStation";
+            ImgName = "Shooter/Gun";
             canShoot = true;
         }
 
         public override void Update(TimeSpan ts)
          {
             //Railgun rotation and limitations
-            gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 220, Mouse.GetState().X - 10);
+            gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 360, Mouse.GetState().X - 100);
            
             base.Update(ts);
         }
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Img, new Rectangle(180, 340, Img.Width, Img.Height), null, Color.White, gunRotation, new Vector2(176, 176), SpriteEffects.None, 0);
+            sb.Draw(Img, new Rectangle(100, 360, Img.Width, Img.Height), null, Color.White, gunRotation, new Vector2(23, 26), SpriteEffects.None, 0);
         }
 
 
