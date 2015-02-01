@@ -11,7 +11,7 @@ namespace PlanetAid.Entities
 {
     class Gun : Sprite
     {
-        private float gunRotation;
+        public float gunRotation;
         public bool canShoot;
 
 
@@ -25,6 +25,16 @@ namespace PlanetAid.Entities
          {
             //Railgun rotation and limitations
             gunRotation = (float)Math.Atan2(Mouse.GetState().Y - 360, Mouse.GetState().X - 100);
+
+            if (gunRotation <= -.700)
+            {
+                gunRotation = -.700f;
+            }
+            if (gunRotation >= .600)
+            {
+                gunRotation = .600f;
+            }
+            
            
             base.Update(ts);
         }

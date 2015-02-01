@@ -15,7 +15,6 @@ namespace PlanetAid
         private string imageName;
         public Rectangle bRect;
         public bool clicked=false;
-        public bool selectInstance=false;
 
         public Button(int x, int y, string name)
         {
@@ -38,8 +37,6 @@ namespace PlanetAid
             Rectangle clickArea = new Rectangle(mouse.X, mouse.Y, 1, 1);
             if (clickArea.Intersects(bRect) && mouse.LeftButton == ButtonState.Pressed)
                 clicked = true;
-            if (clickArea.Intersects(bRect)) 
-                selectInstance = true;
         }
 
         public void Draw(SpriteBatch sb)

@@ -15,7 +15,7 @@ namespace PlanetAid.Entities
     {
         public Vector2 speed;
         public Vector2 initialPos;
-        public float rotatito;
+        public float idleRotation;
 
         public enum Type
         {
@@ -45,7 +45,7 @@ namespace PlanetAid.Entities
                 visible = true;
             }
             position = pos;
-            rotatito = 0;
+            idleRotation = 0;
             rotation = (float)Math.PI/180*rot;
 
         }
@@ -59,7 +59,7 @@ namespace PlanetAid.Entities
         public override void Update(TimeSpan ts)
         {
             position += velocity * (float)ts.TotalSeconds;
-            rotation += rotatito * (float)ts.TotalSeconds;
+            rotation += idleRotation * (float)ts.TotalSeconds;
         }
 
         public void calculateGravity(Planet planet)
@@ -69,7 +69,8 @@ namespace PlanetAid.Entities
                 Vector2 acceleration = new Vector2(planet.myspace.Center.X - myspace.Center.X, planet.myspace.Center.Y - myspace.Center.Y);
                 acceleration.Normalize();
                 acceleration *= 9.8f;
-                velocity += acceleration;
+                if (planet.repel==true)velocity -= acceleration;
+                else velocity += acceleration;
             }
             
         }

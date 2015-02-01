@@ -26,8 +26,9 @@ namespace PlanetAid.Entities
         public Texture2D fieldImg;
         public float radius;
         public float atmosphereRadius;
+        public bool repel;
 
-        public Planet(Type planetType, Vector2 pos, float atmSize, bool isTrgt, Color colr)
+        public Planet(Type planetType, Vector2 pos, float atmSize,bool rep, bool isTrgt = false)
         {
             if (planetType == Type.Planet1)
             {
@@ -45,7 +46,14 @@ namespace PlanetAid.Entities
             position = pos;
             atmosphereRadius = atmSize;
             isTarget = isTrgt;
-            color = colr;
+
+            if (isTarget == true) color = Color.Red;
+            else
+                if (rep == true) color = Color.Purple;
+                else color = Color.White;
+                    
+
+            repel = rep;
             
         }
 
@@ -80,7 +88,6 @@ namespace PlanetAid.Entities
                 }
             }
 
-           
 
         }
 
