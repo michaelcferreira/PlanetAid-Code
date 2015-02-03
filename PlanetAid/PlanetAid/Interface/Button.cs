@@ -9,7 +9,7 @@ using System.Text;
 
 namespace PlanetAid
 {
-    class Button
+    public class Button
     {
         private Texture2D image;
         private string imageName;

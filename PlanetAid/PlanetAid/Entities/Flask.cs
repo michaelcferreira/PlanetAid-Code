@@ -62,15 +62,23 @@ namespace PlanetAid.Entities
             rotation += idleRotation * (float)ts.TotalSeconds;
         }
 
-        public void calculateGravity(Planet planet)
+        public bool calculateGravity(Planet planet)
         {
             if (Vector2.Distance(position, planet.position) <= planet.atmosphereRadius)
             {
                 Vector2 acceleration = new Vector2(planet.myspace.Center.X - myspace.Center.X, planet.myspace.Center.Y - myspace.Center.Y);
                 acceleration.Normalize();
                 acceleration *= 9.8f;
-                if (planet.repel==true)velocity -= acceleration;
-                else velocity += acceleration;
+                if (planet.repel == true) velocity -= acceleration;
+                else 
+                {
+                    velocity += acceleration;
+                }
+                return true;
+            }
+            else
+            {
+                return false;
             }
             
         }
