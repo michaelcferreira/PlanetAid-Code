@@ -28,7 +28,7 @@ namespace PlanetAid.Entities
         public float atmosphereRadius;
         public bool repel;
 
-        public Planet(Type planetType, Vector2 pos, float atmSize,bool rep, bool isTrgt = false)
+        public Planet(Type planetType, Vector2 pos, Vector2 vel, float atmSize,bool rep, bool isTrgt = false)
         {
             if (planetType == Type.Planet1)
             {
@@ -43,6 +43,10 @@ namespace PlanetAid.Entities
             {
                 ImgName = "Planets/Planet-3";
             }
+            else if (planetType == Type.Asteroid1)
+            {
+                ImgName = "Planets/Asteroid-2";
+            }
             position = pos;
             atmosphereRadius = atmSize;
             isTarget = isTrgt;
@@ -51,8 +55,8 @@ namespace PlanetAid.Entities
             else
                 if (rep == true) color = Color.Purple;
                 else color = Color.White;
-                    
 
+            velocity = vel;
             repel = rep;
             
         }
@@ -68,6 +72,8 @@ namespace PlanetAid.Entities
 
         public override void Update(TimeSpan ts)
         {
+            if (position.X < 0 || position.X > 1280 || position.Y < 0 || position.Y > 720)
+                velocity = -velocity;
 
             //Planet rotation
             rotation += rotationAmmount * ((float)Math.PI / 180) * (float)ts.TotalSeconds;
@@ -88,7 +94,7 @@ namespace PlanetAid.Entities
                 }
             }
 
-
+            base.Update(ts);
         }
 
         public override void Draw(SpriteBatch sb)

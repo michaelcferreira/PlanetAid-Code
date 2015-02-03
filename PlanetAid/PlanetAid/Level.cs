@@ -180,8 +180,9 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 205), 20));
             // In each level the planet position, the atmosphere radius and the variable
             // that defines if the planet is the target can be modified to the level needs.
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(640, 350), 190, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 200), 150, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(640, 350), Vector2.Zero, 190, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 200), Vector2.Zero, 150, false, true));
+            
 
             levelList.Add(level);
 
@@ -193,8 +194,8 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
             level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 20));
 
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), 200, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
 
             levelList.Add(level);
 
@@ -206,9 +207,10 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.FatoFlask, new Vector2(25, 95), 20));
             level.flaskList.Add(new Flask(Flask.Type.FatoFlask, new Vector2(25, 40), 20));
 
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(500, 450), 220, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(900, 230), 200, true));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(500, 450), Vector2.Zero, 220, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(900, 230), Vector2.Zero, 200, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), new Vector2(-70, 70), 0, false));
 
             levelList.Add(level);
 
@@ -220,9 +222,9 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 150), 350));
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 205), 20));
 
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(600, 300), 250, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 300), 230, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(150, 90), 90, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(600, 300), Vector2.Zero, 250, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 300), Vector2.Zero, 230, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(150, 90), Vector2.Zero, 90, false, true));
 
             levelList.Add(level);
 
@@ -234,9 +236,9 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
             level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 20));
 
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(450, 150), 120, true));
-            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(800, 500), 220, true));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(700, 110), 120, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(450, 150), Vector2.Zero, 120, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(800, 500), Vector2.Zero, 220, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(700, 110), Vector2.Zero, 120, false, true));
 
             levelList.Add(level);
 
@@ -249,9 +251,9 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.FatoFlask, new Vector2(25, 40), 20));
 
 
-            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(600, 60), 220, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 60), 220, false));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1200, 400), 150, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(600, 60), Vector2.Zero, 220, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(1000, 60), Vector2.Zero, 220, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1200, 400), Vector2.Zero, 150, false, true));
 
             levelList.Add(level);
 

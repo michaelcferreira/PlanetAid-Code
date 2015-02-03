@@ -41,9 +41,9 @@ namespace PlanetAid
         SoundEffect crashingSound;
         SoundEffect flaskSound;
         SoundEffect flaskLostSound;
-        Button playButton, quitButton,      // Buttons
+        Button playButton, quitButton, checkButton,              // Buttons
                 pauseButton, previousMenuButton,
-                pauseMenuButton, retryButton,
+                pauseMenuButton, finalRetryButton, gameoverRetryButton,
                 pauseResetButton, gameoverMenuButton,
                 nivel1Button, nivel2Button,
                 nivel3Button, nivel4Button,
@@ -75,6 +75,7 @@ namespace PlanetAid
             // Main Menu Buttons
             playButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2 + 100, "Buttons/Button_Play");
             quitButton = new Button(GraphicsDevice.Viewport.Width - 115, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Quit");
+            checkButton = new Button(100, 10, "Buttons/Button_Play");
 
             // Level Select Buttons
             nivel1Button = new Button(340, 200, "Buttons/Button_Level1");
@@ -92,8 +93,11 @@ namespace PlanetAid
             pauseMenuButton = new Button(130, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Menu");
             pauseResetButton = new Button(245, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Retry");
 
+            // Level finish Buttons
+            finalRetryButton = new Button(590, 510, "Buttons/Button_Retry");
+
             //Game Over Buttons
-            retryButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2, "Buttons/Button_Retry");
+            gameoverRetryButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2, "Buttons/Button_Retry");
             gameoverMenuButton = new Button(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2, "Buttons/Button_Menu");
 
             base.Initialize();
@@ -112,6 +116,7 @@ namespace PlanetAid
             font = Content.Load<SpriteFont>("Segoi UI Symbol");
             playButton.Load(Content);
             quitButton.Load(Content);
+            checkButton.Load(Content);
 
             // Level menu Elements
             nivel1Button.Load(Content);
@@ -134,8 +139,11 @@ namespace PlanetAid
             pauseResetButton.Load(Content);
 
             //GameOver Elements
-            retryButton.Load(Content);
+            gameoverRetryButton.Load(Content);
             gameoverMenuButton.Load(Content);
+
+            // Finish Elements
+            finalRetryButton.Load(Content);
 
             // Songs & Effects
             menuSong = Content.Load<Song>("Music/MenuMusic");
@@ -185,8 +193,16 @@ namespace PlanetAid
                 if (quitButton.clicked)
                     this.Exit();
 
+                if (checkButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
+                {
+                    clickSound.Play();
+                    checkedPlayerName = playerName;
+                    checkButton.clicked = false;
+                }
+
                 playButton.Update();
                 quitButton.Update();
+                checkButton.Update();
 
                 // Player name input
                 foreach (Keys k in newKeyboardState.GetPressedKeys())
@@ -194,10 +210,8 @@ namespace PlanetAid
                     if ((k >= Keys.A && k <= Keys.Z) && (oldKeyboardState.IsKeyUp(k)))
                         playerName += k.ToString();
                     if ((k == Keys.Enter) && (oldKeyboardState.IsKeyUp(k)))
-                    {
                         checkedPlayerName = playerName;
 
-                    }
                     if ((k == Keys.Back) && (oldKeyboardState.IsKeyUp(k)))
                         playerName = playerName.Remove(playerName.Length - 1);
                 }
@@ -293,7 +307,9 @@ namespace PlanetAid
                 }
                 else if (currentLevel.IsFinished == true)
                 {
+                    finalRetryButton.Update();
                     currentLevel.UpdateFinish();
+
                     if ((Level.n_level < 0) || (Level.n_level > levelList.Count-1))
                     {
                         gameState = GameState.LevelMenu;
@@ -301,6 +317,14 @@ namespace PlanetAid
                     }
                     else if (currentLevel.IsFinished == false)
                             InitializeLevel(Level.n_level);
+
+                    // It checks if the retry button is clicked to reset the level
+                    if (finalRetryButton.clicked)
+                    {
+                        isPaused = false;
+                        finalRetryButton.clicked = false;
+                        InitializeLevel(Level.n_level);
+                    }
                 }
                 // In Playing Mode
                 else
@@ -324,7 +348,7 @@ namespace PlanetAid
                     {
                         if ((gun.canShoot) && (mouse.X > 200))
                         {
-                            flaskSound.Play(1, 0.6f, 0);
+                            flaskSound.Play(0.3f, 0.6f, 0);
                             flask = currentLevel.flaskList[currentFlask];
                             flask.position = new Vector2(70, 375);
                             Vector2 direction = new Vector2(mouse.X - flask.position.X,
@@ -346,7 +370,8 @@ namespace PlanetAid
                         //Shoot enabled when flask reaches screen bounds
                         if (GraphicsDevice.Viewport.Bounds.Contains(flask.myspace) == false)
                         {
-                            flaskLostSound.Play(1, 0.3f, 0);
+                            flaskLostSound.Play(0.8f, 0.3f, 0);
+                            currentLevel.orbitingScore = 0;
                             gun.canShoot = true;
                             flask.visible = false;
                             if (currentFlask >= 4)
@@ -376,12 +401,15 @@ namespace PlanetAid
                             if (Vector2.Distance(new Vector2(flask.myspace.Center.X, flask.myspace.Center.Y),
                                                     new Vector2(p.myspace.Center.X, p.myspace.Center.Y)) < p.radius + 15)
                             {
-                                flask.visible = false;
                                 if (p.isTarget == true)
                                     currentLevel.IsFinished = true;
-                                gun.canShoot = true;
-                                crashingSound.Play();
-
+                                else
+                                {
+                                    currentLevel.orbitingScore = 0;
+                                    flask.visible = false;
+                                    gun.canShoot = true;
+                                    crashingSound.Play();
+                                }
                                 // If the fourth flask colides with any planet, despite the target, its GameOver
                                 if (currentFlask >= 4)
                                 {
@@ -411,12 +439,12 @@ namespace PlanetAid
                     gameState = GameState.LevelMenu;
                     gameoverMenuButton.clicked = false;
                 }
-                retryButton.Update();
-                if (retryButton.clicked)
+                gameoverRetryButton.Update();
+                if (gameoverRetryButton.clicked)
                 {
                     gameState = GameState.Playing;
                     InitializeLevel(Level.n_level);
-                    retryButton.clicked = false;
+                    gameoverRetryButton.clicked = false;
                 }
             }
             oldMouseState = mouse;
@@ -437,6 +465,7 @@ namespace PlanetAid
                                                                     , menuTitle.Height), null, Color.White);
                 playButton.Draw(spriteBatch);
                 quitButton.Draw(spriteBatch);
+                checkButton.Draw(spriteBatch);
                 spriteBatch.Draw(crosshair, crosshairPos, Color.White);
 
                 if (checkedPlayerName == "")
@@ -493,6 +522,7 @@ namespace PlanetAid
                 if (currentLevel.IsFinished == true)
                 {
                     currentLevel.DrawFinish(spriteBatch);
+                    finalRetryButton.Draw(spriteBatch);
                 }
                 spriteBatch.Draw(crosshair, crosshairPos, Color.White);
             }
@@ -501,7 +531,7 @@ namespace PlanetAid
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
                 gameoverMenuButton.Draw(spriteBatch);
-                retryButton.Draw(spriteBatch);
+                gameoverRetryButton.Draw(spriteBatch);
                 spriteBatch.Draw(crosshair, crosshairPos, Color.White);
             }
             spriteBatch.End();

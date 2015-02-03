@@ -58,8 +58,8 @@ namespace PlanetAid.Entities
 
         public override void Update(TimeSpan ts)
         {
-            position += velocity * (float)ts.TotalSeconds;
             rotation += idleRotation * (float)ts.TotalSeconds;
+            base.Update(ts);
         }
 
         public bool calculateGravity(Planet planet)
