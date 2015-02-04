@@ -11,11 +11,12 @@ namespace PlanetAid
 {
     public class Button
     {
-        private Texture2D image;
-        private string imageName;
-        public Rectangle bRect;
-        public bool clicked=false;
+        private Texture2D image;    // Button image
+        private string imageName;   // Button image name
+        public Rectangle bRect;     // Button rectangle
+        public bool clicked=false;  // Checks if button is clicked
 
+        // Declaring values for buttons
         public Button(int x, int y, string name)
         {
             imageName = name;
@@ -35,6 +36,8 @@ namespace PlanetAid
         {
             MouseState mouse = Mouse.GetState();
             Rectangle clickArea = new Rectangle(mouse.X, mouse.Y, 1, 1);
+
+            // Checks if the mouse clicks button
             if (clickArea.Intersects(bRect) && mouse.LeftButton == ButtonState.Pressed)
                 clicked = true;
         }

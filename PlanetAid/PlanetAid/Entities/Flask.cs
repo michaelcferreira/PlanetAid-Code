@@ -21,7 +21,8 @@ namespace PlanetAid.Entities
         {
             Flasky,
             MonoFlask,
-            FatoFlask
+            FatoFlask,
+            JollieFlask
         }
 
         public Flask(Type flaskType,Vector2 pos,float rot)
@@ -41,6 +42,12 @@ namespace PlanetAid.Entities
             else if (flaskType == Type.FatoFlask)
             {
                 ImgName = "Flasks/FatoFlask";
+                speed = new Vector2(300, 300);
+                visible = true;
+            }
+            else if (flaskType == Type.JollieFlask)
+            {
+                ImgName = "Flasks/JollieFlask";
                 speed = new Vector2(300, 300);
                 visible = true;
             }

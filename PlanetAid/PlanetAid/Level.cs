@@ -10,42 +10,48 @@ using System.Linq;
 
 namespace PlanetAid
 {
-    public class Level
+    public class Level 
     {
-        public static int n_level;
-        public List<Flask> flaskList;
-        public List<Planet> planetList;
-        public Score totalScore;
-        public bool IsFinished;
-        public Button previousLevelButton;
-        public Button nextLevelButton;
-        public int attemptScore;
-        public int orbitingScore;
-        public int initialScore;
-        public Vector2 scorePos;
+        public static int n_level;              // Level number
+        public List<Flask> flaskList;           // List containing the flaks
+        public List<Planet> planetList;         // List containing the planets
+        public bool IsFinished;                 // Bool to check if level is finished
+        public Button previousLevelButton;      // Button for the previous level
+        public Button nextLevelButton;          // Button for the next level
+        public Vector2 scorePos;        
         private SpriteFont font;
         private MouseState oldMouseState;
         private List<List<Score>> highScores;
+        public int attemptScore;
+        public int orbitingScore;               // The score given by navigating through the atmosphere
+        public int initialScore;                // The score that defines the attempt score
+        public Score totalScore;                // The total of all scores
 
-        public struct Score
+        public struct Score                     // The score that gets the player name and his score
         {
-            public string name;
-            public int score;
+            public string name;                 // Gets  checked player name
+            public int score;                   // Gets total score
         }
 
         public Level()
         {
+            // Defines the lists
             flaskList = new List<Flask>();
             planetList = new List<Planet>();
 
             // Level Passed Buttons
             nextLevelButton = new Button(690, 320, "Buttons/Button_Next");
             previousLevelButton = new Button(490, 320, "Buttons/Button_Previews");
+
+            // In-Game score position and its initial values
             scorePos = new Vector2(15, 500);
             initialScore = 40000;
             attemptScore = 0;
             orbitingScore = 0;
             totalScore.score = 0;
+
+            // Different lists to be saved in the highscores XML file
+            // in order to be saved by level so it means each list is a level
             highScores = new List<List<Score>>() {
                 new List<Score>(),
                 new List<Score>(),
@@ -58,6 +64,7 @@ namespace PlanetAid
 
         public void Load(ContentManager content)
         {
+            // Loads Flaks and Planets for each entitie in list
             foreach (Flask flask in flaskList)
             {
                 flask.Load(content);
@@ -67,9 +74,10 @@ namespace PlanetAid
                 planet.Load(content);
             }
 
+            // Loads Font
             font = content.Load<SpriteFont>("Segoi UI Symbol");
 
-            // Level Completed Elements
+            // Level Completed Buttons
             nextLevelButton.Load(content);
             previousLevelButton.Load(content);
         }
@@ -78,12 +86,13 @@ namespace PlanetAid
         {
             MouseState mouse = Mouse.GetState();
 
-            // read scores
+            // Read scores on XML file
             ReadScores();
 
             totalScore.name = Game1.checkedPlayerName;
             totalScore.score = initialScore + attemptScore + orbitingScore;
 
+            // If either next level button or previous level button is clicked
             if ((nextLevelButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
             {
                 SaveScores();
@@ -99,6 +108,7 @@ namespace PlanetAid
                 IsFinished = false;
             }
 
+            // Buttons update (checks the click)
             nextLevelButton.Update();
             previousLevelButton.Update();
 
@@ -107,10 +117,14 @@ namespace PlanetAid
 
         public void DrawFinish(SpriteBatch sb)
         {
+            // Draws buttons on screen
             nextLevelButton.Draw(sb);
             previousLevelButton.Draw(sb);
+
+            // Draws total score
             sb.DrawString(font, "Score: " + totalScore.score.ToString(), new Vector2(600,200), Color.White);
             
+            // Draws 4 highscores ands repective player
             for (int i = 0; i < highScores[n_level].Count; i++)
                 if (i < 4)
                     sb.DrawString(font, highScores[n_level][i].name + " --- " + highScores[n_level][i].score, new Vector2(600, 300 + 25 * i), Color.White);
@@ -118,6 +132,7 @@ namespace PlanetAid
 
         public void ReadScores()
         {
+            // Reads file data only if it exists
             if (File.Exists("highscores.txt"))
             {
                 FileStream stream = File.Open("highscores.txt", FileMode.Open);
@@ -129,6 +144,8 @@ namespace PlanetAid
 
         public void SaveScores()
         {
+            // Saves scores to the file
+
             if ((n_level >= 0) && (n_level < 6))
             {
                 FileStream stream = File.Open("highscores.txt", FileMode.Create);
@@ -178,6 +195,7 @@ namespace PlanetAid
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 95), 20));
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 150), 350));
             level.flaskList.Add(new Flask(Flask.Type.Flasky, new Vector2(25, 205), 20));
+
             // In each level the planet position, the atmosphere radius and the variable
             // that defines if the planet is the target can be modified to the level needs.
             level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(640, 350), Vector2.Zero, 190, false));
@@ -238,7 +256,8 @@ namespace PlanetAid
 
             level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(450, 150), Vector2.Zero, 120, true));
             level.planetList.Add(new Planet(Planet.Type.Planet2, new Vector2(800, 500), Vector2.Zero, 220, true));
-            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(700, 110), Vector2.Zero, 120, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(800, 110), Vector2.Zero, 120, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(620, 250), Vector2.Zero, 0, false));
 
             levelList.Add(level);
 

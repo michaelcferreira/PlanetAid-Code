@@ -75,7 +75,7 @@ namespace PlanetAid
             // Main Menu Buttons
             playButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2 + 100, "Buttons/Button_Play");
             quitButton = new Button(GraphicsDevice.Viewport.Width - 115, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Quit");
-            checkButton = new Button(100, 10, "Buttons/Button_Play");
+            checkButton = new Button(100, 10, "Buttons/Button_Checked");
 
             // Level Select Buttons
             nivel1Button = new Button(340, 200, "Buttons/Button_Level1");
@@ -305,6 +305,8 @@ namespace PlanetAid
                         InitializeLevel(Level.n_level);
                     }
                 }
+
+                // If level is completed
                 else if (currentLevel.IsFinished == true)
                 {
                     finalRetryButton.Update();
@@ -337,9 +339,6 @@ namespace PlanetAid
 
                     }
 
-                    // Current level
-
-
                     //Shooting
                     // Pressing mouse left click and verifing if some variables are true
                     // shoots the flask by calculating direction vector between mouse position and
@@ -362,8 +361,7 @@ namespace PlanetAid
                             currentLevel.attemptScore -= 10000;
                         }
                     }
-
-
+                    
                     //Collisions and Gravity Fields
                     if ((gun.canShoot == false) && (flask != null))
                     {
@@ -388,6 +386,7 @@ namespace PlanetAid
                         {
                             f.Update(gameTime.ElapsedGameTime);
                         }
+
                         //For each planet in the list
                         foreach (Planet p in currentLevel.planetList)
                         {
@@ -430,16 +429,19 @@ namespace PlanetAid
                 pauseResetButton.Update();
             }
 
-
+            // If we get out of flaks its game over
             if (gameState == GameState.GameOver)
             {
                 gameoverMenuButton.Update();
+                // Menu button clicked leads player to level menu
                 if (gameoverMenuButton.clicked)
                 {
                     gameState = GameState.LevelMenu;
                     gameoverMenuButton.clicked = false;
                 }
                 gameoverRetryButton.Update();
+
+                // Retry button clicked resets the level
                 if (gameoverRetryButton.clicked)
                 {
                     gameState = GameState.Playing;
@@ -456,6 +458,7 @@ namespace PlanetAid
         {
             spriteBatch.Begin();
 
+            // Draws stars menu elements
             if (gameState == GameState.StartMenu)
             {
 
@@ -473,6 +476,7 @@ namespace PlanetAid
                 else spriteBatch.DrawString(font, checkedPlayerName, new Vector2(1000, 15), Color.LightGreen);
             }
 
+            // Draws level menu elements
             if (gameState == GameState.LevelMenu)
             {
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
@@ -487,16 +491,15 @@ namespace PlanetAid
                 spriteBatch.Draw(crosshair, crosshairPos, Color.White);
             }
 
+            // Draws plaing elements
             if (gameState == GameState.Playing)
             {
                 spriteBatch.Draw(play_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
                 pauseButton.Draw(spriteBatch);
 
-                // Draws score
-                //string Score= attemptScore;
-
                 spriteBatch.DrawString(font, "Score: " + currentLevel.orbitingScore.ToString(), new Vector2(15, 500), Color.White);
+
                 // Draws planets on screeen
                 foreach (Planet p in currentLevel.planetList)
                     p.Draw(spriteBatch);
@@ -538,6 +541,7 @@ namespace PlanetAid
             base.Draw(gameTime);
         }
 
+        // Called whenever we want a new level
         void InitializeLevel(int lvl)
         {
             levelList = Level.CreateLevelsList();
