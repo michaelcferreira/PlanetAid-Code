@@ -30,12 +30,13 @@ namespace PlanetAid.Entities
             {
                 gunRotation = -.700f;
             }
+            
             if (gunRotation >= .600)
             {
                 gunRotation = .600f;
             }
-            
-           
+                
+
             base.Update(ts);
         }
 

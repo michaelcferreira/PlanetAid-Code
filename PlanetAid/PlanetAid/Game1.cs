@@ -30,7 +30,7 @@ namespace PlanetAid
         Texture2D menuPlanetBackground;
         Texture2D menuTitle;
         Texture2D astronaut;
-        Texture2D playerNameHUD, pauseHUD, finishHUD;
+        Texture2D playerNameHUD, pauseHUD,gameoverHUD, finishHUD;
         Texture2D lvl1, lvl2, lvl3,
                 lvl4, lvl5, lvl6;
         SpriteFont font;
@@ -100,8 +100,8 @@ namespace PlanetAid
             finalRetryButton = new Button(590, 610, 100, 100, "Buttons/Button_Retry");
 
             //Game Over Buttons
-            gameoverRetryButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2, 100, 100, "Buttons/Button_Retry");
-            gameoverMenuButton = new Button(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2, 100, 100, "Buttons/Button_Menu");
+            gameoverRetryButton = new Button(470, 260, 350, 100, "Buttons/Button_GameOverRetry");
+            gameoverMenuButton = new Button(470, 500, 350, 100, "Buttons/Button_LevelMenu");
 
             base.Initialize();
         }
@@ -152,6 +152,7 @@ namespace PlanetAid
             pauseRestartButton.Load(Content);
 
             //GameOver Elements
+            gameoverHUD = Content.Load<Texture2D>("HUD/HUD_GameOver");
             gameoverRetryButton.Load(Content);
             gameoverMenuButton.Load(Content);
 
@@ -207,6 +208,7 @@ namespace PlanetAid
                 if (quitButton.clicked)
                     this.Exit();
 
+                // When pressing name check button
                 if (checkButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
                 {
                     clickSound.Play();
@@ -411,7 +413,7 @@ namespace PlanetAid
                             // Calculates flask gravity when entering planet atmosphere
                             if (flask.calculateGravity(p))
                             {
-                                currentLevel.orbitingScore += 100;
+                                currentLevel.orbitingScore += 105;
                             }
 
                             // When flask colide with any planet
@@ -479,12 +481,12 @@ namespace PlanetAid
 
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                 spriteBatch.Draw(menuTitle, new Rectangle((GraphicsDevice.Viewport.Width/2)-(menuTitle.Width/2), 20, menuTitle.Width, menuTitle.Height), null, Color.White);
-                spriteBatch.Draw(menuPlanetBackground, new Rectangle(130, 200, menuPlanetBackground.Width, menuPlanetBackground.Height), Color.White);
+                spriteBatch.Draw(menuPlanetBackground, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (menuPlanetBackground.Width / 2), 200, menuPlanetBackground.Width / (6 / 5), menuPlanetBackground.Height / (6 / 5)), Color.White);
                 spriteBatch.Draw(playerNameHUD, new Rectangle(0, 300,playerNameHUD.Width,playerNameHUD.Height), Color.White);
                 playButton.Draw(spriteBatch);
                 quitButton.Draw(spriteBatch);
                 checkButton.Draw(spriteBatch);
-                spriteBatch.Draw(cursor, cursorPos, Color.White);
+                
 
                 if (checkedPlayerName == "")
                     spriteBatch.DrawString(font, playerName, new Vector2(25, 335), Color.Black);
@@ -502,7 +504,6 @@ namespace PlanetAid
                 nivel5Button.Draw(spriteBatch);
                 nivel6Button.Draw(spriteBatch);
                 previousMenuButton.Draw(spriteBatch);
-                spriteBatch.Draw(cursor, cursorPos, Color.White);
             }
 
             if (gameState == GameState.Playing)
@@ -513,6 +514,14 @@ namespace PlanetAid
 
                 // Draws score
                 spriteBatch.DrawString(font, "Orbiting Score: " + currentLevel.orbitingScore.ToString(), new Vector2(15, 500), Color.White);
+
+                // Draws planets on screeen
+                foreach (Planet p in currentLevel.planetList)
+                    p.Draw(spriteBatch);
+
+                // Draws flasks on screeen
+                foreach (Flask f in currentLevel.flaskList)
+                    f.Draw(spriteBatch);
 
                 // Draws current level
                 if (Level.n_level == 0)
@@ -528,13 +537,6 @@ namespace PlanetAid
                 if (Level.n_level == 5)
                     spriteBatch.Draw(lvl6, new Rectangle(1100, 10, 175, 50), Color.White);
 
-                // Draws planets on screeen
-                foreach (Planet p in currentLevel.planetList)
-                    p.Draw(spriteBatch);
-
-                // Draws flasks on screeen
-                foreach (Flask f in currentLevel.flaskList)
-                    f.Draw(spriteBatch);
 
                 spriteBatch.Draw(astronaut, new Rectangle(-5, 5, 230, 480), Color.White);
 
@@ -559,16 +561,18 @@ namespace PlanetAid
                     currentLevel.DrawFinish(spriteBatch);
                     finalRetryButton.Draw(spriteBatch);
                 }
-                spriteBatch.Draw(cursor, cursorPos, Color.White);
+                
             }
             if (gameState == GameState.GameOver)
             {
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
+                spriteBatch.Draw(gameoverHUD, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (gameoverHUD.Width / 2), 100, gameoverHUD.Width, gameoverHUD.Height), Color.White);
                 gameoverMenuButton.Draw(spriteBatch);
                 gameoverRetryButton.Draw(spriteBatch);
-                spriteBatch.Draw(cursor, cursorPos, Color.White);
+                
             }
+            spriteBatch.Draw(cursor, cursorPos, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
