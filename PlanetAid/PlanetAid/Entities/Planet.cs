@@ -45,7 +45,20 @@ namespace PlanetAid.Entities
             }
             else if (planetType == Type.Asteroid1)
             {
+                ImgName = "Planets/Asteroid-1";
+            }
+            else if (planetType == Type.Asteroid2)
+            {
                 ImgName = "Planets/Asteroid-2";
+            }
+            else if (planetType == Type.Asteroid3)
+            {
+                ImgName = "Planets/Asteroid-3";
+
+            }
+            else if (planetType == Type.Asteroid4)
+            {
+                ImgName = "Planets/Asteroid-4";
             }
             position = pos;
             atmosphereRadius = atmSize;
