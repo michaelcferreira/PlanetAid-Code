@@ -10,7 +10,7 @@ namespace PlanetAid.Entities
 {
     public class Planet : Sprite
     {
-        public enum Type    // Types of planets
+        public enum Type
         {
             Planet1,
             Planet2,
@@ -20,13 +20,13 @@ namespace PlanetAid.Entities
             Asteroid3,
             Asteroid4
         }
-        private bool rotatingLeft = false;  // For the planets rotation animation
+        private bool rotatingLeft = false;
         private float rotationAmmount = 7;
-        public Texture2D fieldImg;          // Atmosphere image
-        public float radius;                // Planet radius
-        public float atmosphereRadius;      //  Atmosphere Radius
-        public bool isTarget;               // Detects if it is the target planet
-        public bool repel;                  // Detects if it is a repel type planet
+        public bool isTarget;
+        public Texture2D fieldImg;
+        public float radius;
+        public float atmosphereRadius;
+        public bool repel;
 
         public Planet(Type planetType, Vector2 pos, Vector2 vel, float atmSize,bool rep, bool isTrgt = false)
         {
@@ -45,19 +45,7 @@ namespace PlanetAid.Entities
             }
             else if (planetType == Type.Asteroid1)
             {
-                ImgName = "Planets/Asteroid-1";
-            }
-            else if (planetType == Type.Asteroid2)
-            {
                 ImgName = "Planets/Asteroid-2";
-            }
-            else if (planetType == Type.Asteroid3)
-            {
-                ImgName = "Planets/Asteroid-3";
-            }
-            else if (planetType == Type.Asteroid4)
-            {
-                ImgName = "Planets/Asteroid-4";
             }
             position = pos;
             atmosphereRadius = atmSize;
@@ -84,11 +72,10 @@ namespace PlanetAid.Entities
 
         public override void Update(TimeSpan ts)
         {
-            // If moving asteroid reaches screen border goes in the oposite direction
             if (position.X < 0 || position.X > 1280 || position.Y < 0 || position.Y > 720)
                 velocity = -velocity;
 
-            // Planet rotation animation
+            //Planet rotation
             rotation += rotationAmmount * ((float)Math.PI / 180) * (float)ts.TotalSeconds;
             if (rotatingLeft)
             {

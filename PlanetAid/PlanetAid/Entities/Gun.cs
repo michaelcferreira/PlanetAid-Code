@@ -11,8 +11,8 @@ namespace PlanetAid.Entities
 {
     class Gun : Sprite
     {
-        public float gunRotation;   // Gun Rotation
-        public bool canShoot;       // Checks if its possible to shoot
+        public float gunRotation;
+        public bool canShoot;
 
 
         public Gun()
@@ -34,6 +34,8 @@ namespace PlanetAid.Entities
             {
                 gunRotation = .600f;
             }
+            
+           
             base.Update(ts);
         }
 

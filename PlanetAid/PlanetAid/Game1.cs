@@ -26,15 +26,17 @@ namespace PlanetAid
         public Level currentLevel;
         GameState gameState;
         bool isPaused = false;      // Sub-Game States
-        Texture2D menu_background;  // Fixed Textures
-        Texture2D play_background;
-        Texture2D pause_menu;
+        Texture2D menu_background, play_background;
+        Texture2D menuPlanetBackground;
         Texture2D menuTitle;
         Texture2D astronaut;
+        Texture2D playerNameHUD, pauseHUD, finishHUD;
+        Texture2D lvl1, lvl2, lvl3,
+                lvl4, lvl5, lvl6;
         SpriteFont font;
         string playerName = "";       // Player Name
-        Texture2D crosshair;
-        Vector2 crosshairPos;       // Levels
+        Texture2D cursor;
+        Vector2 cursorPos;       // Levels
         int currentFlask = 0;
         Song menuSong;                      //Songs & Sound Effects
         SoundEffect clickSound;
@@ -44,7 +46,7 @@ namespace PlanetAid
         Button playButton, quitButton, checkButton,              // Buttons
                 pauseButton, previousMenuButton,
                 pauseMenuButton, finalRetryButton, gameoverRetryButton,
-                pauseResetButton, gameoverMenuButton,
+                pauseRestartButton, pauseResumeButton, gameoverMenuButton,
                 nivel1Button, nivel2Button,
                 nivel3Button, nivel4Button,
                 nivel5Button, nivel6Button;
@@ -73,32 +75,33 @@ namespace PlanetAid
             gameState = GameState.StartMenu;
 
             // Main Menu Buttons
-            playButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2 + 100, "Buttons/Button_Play");
-            quitButton = new Button(GraphicsDevice.Viewport.Width - 115, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Quit");
-            checkButton = new Button(100, 10, "Buttons/Button_Checked");
+            playButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2 + 100, 100, 100, "Buttons/Button_Next");
+            quitButton = new Button(GraphicsDevice.Viewport.Width - 115, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_Quit");
+            checkButton = new Button(195, 328, 40, 40, "Buttons/Button_Check");
 
             // Level Select Buttons
-            nivel1Button = new Button(340, 200, "Buttons/Button_Level1");
-            nivel2Button = new Button(600, 200, "Buttons/Button_Level2");
-            nivel3Button = new Button(860, 200, "Buttons/Button_Level3");
-            nivel4Button = new Button(340, 350, "Buttons/Button_Level4");
-            nivel5Button = new Button(600, 350, "Buttons/Button_Level5");
-            nivel6Button = new Button(860, 350, "Buttons/Button_Level6");
-            previousMenuButton = new Button(10, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Previews");
+            nivel1Button = new Button(340, 200, 100, 100, "Buttons/Button_Level1");
+            nivel2Button = new Button(600, 200, 100, 100, "Buttons/Button_Level2");
+            nivel3Button = new Button(860, 200, 100, 100, "Buttons/Button_Level3");
+            nivel4Button = new Button(340, 350, 100, 100, "Buttons/Button_Level4");
+            nivel5Button = new Button(600, 350, 100, 100, "Buttons/Button_Level5");
+            nivel6Button = new Button(860, 350, 100, 100, "Buttons/Button_Level6");
+            previousMenuButton = new Button(10, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_PreviewMenu");
 
             // Playing Buttons
-            pauseButton = new Button(15, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Pause");
+            pauseButton = new Button(15, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_Pause");
 
             // Paused Buttons
-            pauseMenuButton = new Button(130, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Menu");
-            pauseResetButton = new Button(245, GraphicsDevice.Viewport.Height - 115, "Buttons/Button_Retry");
+            pauseResumeButton = new Button(470, 260, 350, 100, "Buttons/Button_Resume");
+            pauseRestartButton = new Button(470, 380, 350, 100, "Buttons/Button_Restart");
+            pauseMenuButton = new Button(470, 500, 350, 100, "Buttons/Button_LevelMenu");
 
             // Level finish Buttons
-            finalRetryButton = new Button(590, 510, "Buttons/Button_Retry");
+            finalRetryButton = new Button(590, 610, 100, 100, "Buttons/Button_Retry");
 
             //Game Over Buttons
-            gameoverRetryButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2, "Buttons/Button_Retry");
-            gameoverMenuButton = new Button(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2, "Buttons/Button_Menu");
+            gameoverRetryButton = new Button(GraphicsDevice.Viewport.Width / 2 - 50, GraphicsDevice.Viewport.Height / 2, 100, 100, "Buttons/Button_Retry");
+            gameoverMenuButton = new Button(GraphicsDevice.Viewport.Width / 2 - 200, GraphicsDevice.Viewport.Height / 2, 100, 100, "Buttons/Button_Menu");
 
             base.Initialize();
         }
@@ -108,11 +111,13 @@ namespace PlanetAid
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            crosshair = Content.Load<Texture2D>("crosshair");
+            cursor = Content.Load<Texture2D>("cursor");
 
             // Menu Elements
             menuTitle = Content.Load<Texture2D>("Title");
             menu_background = Content.Load<Texture2D>("MenuBackground");
+            menuPlanetBackground = Content.Load<Texture2D>("MenuPlanetBackground");
+            playerNameHUD = Content.Load<Texture2D>("HUD/HUD_PlayerName");
             font = Content.Load<SpriteFont>("Segoi UI Symbol");
             playButton.Load(Content);
             quitButton.Load(Content);
@@ -128,15 +133,23 @@ namespace PlanetAid
             previousMenuButton.Load(Content);
 
             // Playing Elements
-            astronaut = Content.Load<Texture2D>("Shooter/Astronaut");
             play_background = Content.Load<Texture2D>("background");
+            astronaut = Content.Load<Texture2D>("Shooter/Astronaut");
             gun.Load(Content);
+            lvl1 = Content.Load<Texture2D>("HUD/Level1");
+            lvl2 = Content.Load<Texture2D>("HUD/Level2");
+            lvl3 = Content.Load<Texture2D>("HUD/Level3");
+            lvl4 = Content.Load<Texture2D>("HUD/Level4");
+            lvl5 = Content.Load<Texture2D>("HUD/Level5");
+            lvl6 = Content.Load<Texture2D>("HUD/Level6");
+
 
             // Pause Elements
-            pause_menu = Content.Load<Texture2D>("Pause_Menu");
+            pauseHUD = Content.Load<Texture2D>("HUD/HUD_Pause");
             pauseButton.Load(Content);
+            pauseResumeButton.Load(Content);
             pauseMenuButton.Load(Content);
-            pauseResetButton.Load(Content);
+            pauseRestartButton.Load(Content);
 
             //GameOver Elements
             gameoverRetryButton.Load(Content);
@@ -144,6 +157,7 @@ namespace PlanetAid
 
             // Finish Elements
             finalRetryButton.Load(Content);
+            finishHUD = Content.Load<Texture2D>("HUD/HUD_Finish");
 
             // Songs & Effects
             menuSong = Content.Load<Song>("Music/MenuMusic");
@@ -165,7 +179,7 @@ namespace PlanetAid
         {
             MouseState mouse = Mouse.GetState();
             KeyboardState newKeyboardState = Keyboard.GetState();
-            crosshairPos = new Vector2(mouse.X - 24, mouse.Y - 24);
+            cursorPos = new Vector2(mouse.X, mouse.Y);
 
             // Updating the game while in Start Menu
             // When game is at start menu it adds music and checks if we press
@@ -212,13 +226,17 @@ namespace PlanetAid
                     if ((k == Keys.Enter) && (oldKeyboardState.IsKeyUp(k)))
                         checkedPlayerName = playerName;
 
-                    if ((k == Keys.Back) && (oldKeyboardState.IsKeyUp(k)))
-                        playerName = playerName.Remove(playerName.Length - 1);
+                        if((k == Keys.Back) && (oldKeyboardState.IsKeyUp(k)))
+                        {
+                            if (playerName.Length < 0)
+                                playerName += "";
+                            else playerName = playerName.Remove(playerName.Length - 1);
+                        }
                 }
             }
 
             // Updating the game while in LEVEL MENU and so it means that it is testing
-            // if the buttons are clicked and if so it changes the game state and the level
+            // if the buttons are clicked and if so it changes the game state and the level.
             if (gameState == GameState.LevelMenu)
             {
                 nivel1Button.Update();
@@ -280,12 +298,11 @@ namespace PlanetAid
                 // In Pause Menu
                 if (isPaused == true)
                 {
-                    // Click Pause Button to go back to the playing state
-                    if ((pauseButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
+                    // Click Resume Button to go back to the playing state
+                    if ((pauseResumeButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
                     {
                         isPaused = false;
-                        pauseButton.clicked = false;
-
+                        pauseResumeButton.clicked = false;
                     }
 
                     // Click Menu Button to go back to level menu
@@ -298,27 +315,25 @@ namespace PlanetAid
                     }
 
                     // It checks if the retry button is clicked to reset the level
-                    if ((pauseResetButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
+                    if ((pauseRestartButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
                     {
                         isPaused = false;
-                        pauseResetButton.clicked = false;
+                        pauseRestartButton.clicked = false;
                         InitializeLevel(Level.n_level);
                     }
                 }
-
-                // If level is completed
                 else if (currentLevel.IsFinished == true)
                 {
                     finalRetryButton.Update();
                     currentLevel.UpdateFinish();
 
-                    if ((Level.n_level < 0) || (Level.n_level > levelList.Count-1))
+                    if ((Level.n_level < 0) || (Level.n_level > levelList.Count - 1))
                     {
                         gameState = GameState.LevelMenu;
                         MediaPlayer.Play(menuSong);
                     }
                     else if (currentLevel.IsFinished == false)
-                            InitializeLevel(Level.n_level);
+                        InitializeLevel(Level.n_level);
 
                     // It checks if the retry button is clicked to reset the level
                     if (finalRetryButton.clicked)
@@ -339,7 +354,10 @@ namespace PlanetAid
 
                     }
 
-                    //Shooting
+                    // Current level
+
+
+                    // Shooting
                     // Pressing mouse left click and verifing if some variables are true
                     // shoots the flask by calculating direction vector between mouse position and
                     // flask position and gives him a velocity by multiplying the position w/ the speed.
@@ -361,8 +379,9 @@ namespace PlanetAid
                             currentLevel.attemptScore -= 10000;
                         }
                     }
-                    
-                    //Collisions and Gravity Fields
+
+
+                    // Collisions and Gravity Fields
                     if ((gun.canShoot == false) && (flask != null))
                     {
                         //Shoot enabled when flask reaches screen bounds
@@ -381,22 +400,21 @@ namespace PlanetAid
                             }
                         }
 
-                        //For each flask in the list it calculates its update
+                        // For each flask in the list it calculates its update
                         foreach (Flask f in currentLevel.flaskList)
                         {
                             f.Update(gameTime.ElapsedGameTime);
                         }
-
-                        //For each planet in the list
+                        // For each planet in the list
                         foreach (Planet p in currentLevel.planetList)
                         {
-                            //Calculates flask gravity when entering planet atmosphere
+                            // Calculates flask gravity when entering planet atmosphere
                             if (flask.calculateGravity(p))
                             {
                                 currentLevel.orbitingScore += 100;
                             }
 
-                            //When flask colide with any planet
+                            // When flask colide with any planet
                             if (Vector2.Distance(new Vector2(flask.myspace.Center.X, flask.myspace.Center.Y),
                                                     new Vector2(p.myspace.Center.X, p.myspace.Center.Y)) < p.radius + 15)
                             {
@@ -425,24 +443,22 @@ namespace PlanetAid
                     gun.Update(gameTime.ElapsedGameTime);
                 }
                 pauseButton.Update();
+                pauseResumeButton.Update();
                 pauseMenuButton.Update();
-                pauseResetButton.Update();
+                pauseRestartButton.Update();
             }
 
-            // If we get out of flaks its game over
+
             if (gameState == GameState.GameOver)
             {
                 gameoverMenuButton.Update();
-                // Menu button clicked leads player to level menu
-                if (gameoverMenuButton.clicked)
+                if ((gameoverMenuButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
                 {
                     gameState = GameState.LevelMenu;
                     gameoverMenuButton.clicked = false;
                 }
                 gameoverRetryButton.Update();
-
-                // Retry button clicked resets the level
-                if (gameoverRetryButton.clicked)
+                if ((gameoverRetryButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
                 {
                     gameState = GameState.Playing;
                     InitializeLevel(Level.n_level);
@@ -458,25 +474,23 @@ namespace PlanetAid
         {
             spriteBatch.Begin();
 
-            // Draws stars menu elements
             if (gameState == GameState.StartMenu)
             {
 
-                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
-                                                                    , GraphicsDevice.Viewport.Height), Color.White);
-                spriteBatch.Draw(menuTitle, new Rectangle(290, 125, menuTitle.Width
-                                                                    , menuTitle.Height), null, Color.White);
+                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+                spriteBatch.Draw(menuTitle, new Rectangle((GraphicsDevice.Viewport.Width/2)-(menuTitle.Width/2), 20, menuTitle.Width, menuTitle.Height), null, Color.White);
+                spriteBatch.Draw(menuPlanetBackground, new Rectangle(130, 200, menuPlanetBackground.Width, menuPlanetBackground.Height), Color.White);
+                spriteBatch.Draw(playerNameHUD, new Rectangle(0, 300,playerNameHUD.Width,playerNameHUD.Height), Color.White);
                 playButton.Draw(spriteBatch);
                 quitButton.Draw(spriteBatch);
                 checkButton.Draw(spriteBatch);
-                spriteBatch.Draw(crosshair, crosshairPos, Color.White);
+                spriteBatch.Draw(cursor, cursorPos, Color.White);
 
                 if (checkedPlayerName == "")
-                    spriteBatch.DrawString(font, playerName, new Vector2(15, 15), Color.LightGreen);
-                else spriteBatch.DrawString(font, checkedPlayerName, new Vector2(1000, 15), Color.LightGreen);
+                    spriteBatch.DrawString(font, playerName, new Vector2(25, 335), Color.Black);
+                else spriteBatch.DrawString(font, checkedPlayerName, new Vector2(25, 335), Color.Black);
             }
 
-            // Draws level menu elements
             if (gameState == GameState.LevelMenu)
             {
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
@@ -488,17 +502,31 @@ namespace PlanetAid
                 nivel5Button.Draw(spriteBatch);
                 nivel6Button.Draw(spriteBatch);
                 previousMenuButton.Draw(spriteBatch);
-                spriteBatch.Draw(crosshair, crosshairPos, Color.White);
+                spriteBatch.Draw(cursor, cursorPos, Color.White);
             }
 
-            // Draws plaing elements
             if (gameState == GameState.Playing)
             {
                 spriteBatch.Draw(play_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
-                pauseButton.Draw(spriteBatch);
+                
 
-                spriteBatch.DrawString(font, "Score: " + currentLevel.orbitingScore.ToString(), new Vector2(15, 500), Color.White);
+                // Draws score
+                spriteBatch.DrawString(font, "Orbiting Score: " + currentLevel.orbitingScore.ToString(), new Vector2(15, 500), Color.White);
+
+                // Draws current level
+                if (Level.n_level == 0)
+                    spriteBatch.Draw(lvl1, new Rectangle(1100, 10, 175, 50), Color.White);
+                if (Level.n_level == 1)
+                    spriteBatch.Draw(lvl2, new Rectangle(1100, 10, 175, 50), Color.White);
+                if (Level.n_level == 2)
+                    spriteBatch.Draw(lvl3, new Rectangle(1100, 10, 175, 50), Color.White);
+                if (Level.n_level == 3)
+                    spriteBatch.Draw(lvl4, new Rectangle(1100, 10, 175, 50), Color.White);
+                if (Level.n_level == 4)
+                    spriteBatch.Draw(lvl5, new Rectangle(1100, 10, 175, 50), Color.White);
+                if (Level.n_level == 5)
+                    spriteBatch.Draw(lvl6, new Rectangle(1100, 10, 175, 50), Color.White);
 
                 // Draws planets on screeen
                 foreach (Planet p in currentLevel.planetList)
@@ -518,16 +546,20 @@ namespace PlanetAid
 
                 if (isPaused == true)
                 {
-                    //spriteBatch.Draw(pause_menu, new Rectangle(400, 200, pause_menu.Width, pause_menu.Height), Color.White);
+                    spriteBatch.Draw(pauseHUD, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (pauseHUD.Width / 2), 100, pauseHUD.Width, pauseHUD.Height), Color.White);
+                    pauseResumeButton.Draw(spriteBatch);
                     pauseMenuButton.Draw(spriteBatch);
-                    pauseResetButton.Draw(spriteBatch);
+                    pauseRestartButton.Draw(spriteBatch);
                 }
+                else pauseButton.Draw(spriteBatch);
+
                 if (currentLevel.IsFinished == true)
                 {
+                    spriteBatch.Draw(finishHUD, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (finishHUD.Width / 2), 0, finishHUD.Width, finishHUD.Height), Color.White);
                     currentLevel.DrawFinish(spriteBatch);
                     finalRetryButton.Draw(spriteBatch);
                 }
-                spriteBatch.Draw(crosshair, crosshairPos, Color.White);
+                spriteBatch.Draw(cursor, cursorPos, Color.White);
             }
             if (gameState == GameState.GameOver)
             {
@@ -535,13 +567,12 @@ namespace PlanetAid
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
                 gameoverMenuButton.Draw(spriteBatch);
                 gameoverRetryButton.Draw(spriteBatch);
-                spriteBatch.Draw(crosshair, crosshairPos, Color.White);
+                spriteBatch.Draw(cursor, cursorPos, Color.White);
             }
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        // Called whenever we want a new level
         void InitializeLevel(int lvl)
         {
             levelList = Level.CreateLevelsList();

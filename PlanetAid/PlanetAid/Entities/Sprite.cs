@@ -10,15 +10,15 @@ namespace PlanetAid.Entities
 {
     public class Sprite
     {
-        public Texture2D Img;           // Sprites texture
-        public float rotation = 0;      // Sprites rotation
-        public string ImgName;          // Sprite Image Name
-        public Vector2 position;        // Sprite position
-        public Vector2 velocity;        // Sprite velocity
-        public Vector2 origin;          // Sprite image center
-        public Color color=Color.White; // Sprite color (only used for atmosphere color)
-        public bool visible=true;       // Sprite visability
-        public Rectangle myspace        // Sprite rectangle (for colisions)
+        public Texture2D Img;
+        public float rotation = 0;
+        public string ImgName;
+        public Vector2 position;
+        public Vector2 velocity;
+        public Vector2 origin;
+        public Color color=Color.White;
+        public bool visible=true;
+        public Rectangle myspace
         {
             get
             {
