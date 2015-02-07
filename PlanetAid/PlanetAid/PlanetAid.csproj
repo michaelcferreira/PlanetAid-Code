@@ -76,6 +76,7 @@
     <Compile Include="Entities\Gun.cs" />
     <Compile Include="Entities\Planet.cs" />
     <Compile Include="Entities\Sprite.cs" />
+    <Compile Include="InputManager.cs" />
     <Compile Include="Interface\Button.cs" />
     <Compile Include="Level.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

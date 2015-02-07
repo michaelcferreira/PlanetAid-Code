@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using InputManager;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,7 +15,8 @@ namespace PlanetAid
         private Texture2D image;
         private string imageName;
         public Rectangle bRect;
-        public bool clicked=false;
+        public bool clicked = false;
+        public bool mouseOver = false;
 
         public Button(int x, int y, int width, int height, string name)
         {
@@ -35,8 +37,11 @@ namespace PlanetAid
         {
             MouseState mouse = Mouse.GetState();
             Rectangle clickArea = new Rectangle(mouse.X, mouse.Y, 1, 1);
-            if (clickArea.Intersects(bRect) && mouse.LeftButton == ButtonState.Pressed)
+            if (clickArea.Intersects(bRect) && Input.IsMousePressed())
                 clicked = true;
+            if (clickArea.Intersects(bRect))
+                mouseOver = true;
+            else mouseOver = false;
         }
 
         public void Draw(SpriteBatch sb)

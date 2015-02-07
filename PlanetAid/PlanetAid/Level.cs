@@ -54,6 +54,11 @@ namespace PlanetAid
                 new List<Score>(),
                 new List<Score>(),
                 new List<Score>(),
+                new List<Score>(),
+                new List<Score>(),
+                new List<Score>(),
+                new List<Score>(),
+                new List<Score>(),
             };
         }
 
@@ -120,7 +125,7 @@ namespace PlanetAid
                 if (i < 4)
                     sb.DrawString(font, highScores[n_level][i].name + "         " + highScores[n_level][i].score, new Vector2(560, 470 + 25 * i), Color.Black);
         }
-
+        
         public void ReadScores()
         {
             if (File.Exists("highscores.txt"))
@@ -134,7 +139,7 @@ namespace PlanetAid
 
         public void SaveScores()
         {
-            if ((n_level >= 0) && (n_level < 6))
+            if ((n_level >= 0) && (n_level < 7))
             {
                 FileStream stream = File.Open("highscores.txt", FileMode.Create);
                 XmlSerializer serializer = new XmlSerializer(typeof(List<List<Score>>));
@@ -278,6 +283,101 @@ namespace PlanetAid
 
             levelList.Add(level);
 
+            // Level 7
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
+
+            // Level 8
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
+
+            // Level 9
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
+
+            // Level 10
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
+
+            // Level 11
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
+
+            // Level 12
+            level = new Level();
+
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 40), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 95), 20));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 150), 350));
+            level.flaskList.Add(new Flask(Flask.Type.MonoFlask, new Vector2(25, 205), 20));
+
+            level.planetList.Add(new Planet(Planet.Type.Planet1, new Vector2(1000, 290), Vector2.Zero, 200, false));
+            level.planetList.Add(new Planet(Planet.Type.Planet3, new Vector2(1000, 600), Vector2.Zero, 100, false, true));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid1, new Vector2(850, 500), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid2, new Vector2(850, 590), Vector2.Zero, 0, false));
+            level.planetList.Add(new Planet(Planet.Type.Asteroid3, new Vector2(850, 680), Vector2.Zero, 0, false));
+
+            levelList.Add(level);
             return levelList;
         }
 

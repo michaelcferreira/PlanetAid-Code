@@ -1,3 +1,4 @@
+using InputManager;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -14,7 +15,7 @@ namespace PlanetAid
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        enum GameState                      // Game States
+        enum GameState
         {
             StartMenu,
             LevelMenu,
@@ -23,39 +24,46 @@ namespace PlanetAid
         }
         public static string checkedPlayerName = "";
         public List<Level> levelList;
-        public Level currentLevel;
+        public Level currentLevel;  
+        string playerName = "";     
+        // Sub-Game States
+        bool isPlaying = false;
+        bool isPaused = false;
+        bool levelMenu1 = false;
+        bool levelMenu2= false;
+        int currentFlask = 0;
         GameState gameState;
-        bool isPaused = false;      // Sub-Game States
         Texture2D menu_background, play_background;
         Texture2D menuPlanetBackground;
         Texture2D menuTitle;
         Texture2D astronaut;
         Texture2D playerNameHUD, pauseHUD,gameoverHUD, finishHUD;
-        Texture2D lvl1, lvl2, lvl3,
-                lvl4, lvl5, lvl6;
-        SpriteFont font;
-        string playerName = "";       // Player Name
+        Texture2D purpleDot;
         Texture2D cursor;
-        Vector2 cursorPos;       // Levels
-        int currentFlask = 0;
-        Song menuSong;                      //Songs & Sound Effects
+        Vector2 cursorPos;          
+        // Display of current level while playing
+        Texture2D   lvl1, lvl2, lvl3, 
+                    lvl4, lvl5, lvl6,
+                    lvl7, lvl8, lvl9,
+                    lvl10, lvl11, lvl12;
+        SpriteFont font;
+        Song menuSong;                      
         SoundEffect clickSound;
         SoundEffect crashingSound;
         SoundEffect flaskSound;
         SoundEffect flaskLostSound;
-        Button playButton, quitButton, checkButton,              // Buttons
-                pauseButton, previousMenuButton,
+        Button playButton, quitButton, checkButton,
+                pauseButton, previousMenuButton, nextMenuButton,
                 pauseMenuButton, finalRetryButton, gameoverRetryButton,
                 pauseRestartButton, pauseResumeButton, gameoverMenuButton,
                 nivel1Button, nivel2Button,
                 nivel3Button, nivel4Button,
-                nivel5Button, nivel6Button;
-
+                nivel5Button, nivel6Button,
+                nivel7Button, nivel8Button,
+                nivel9Button, nivel10Button,
+                nivel11Button, nivel12Button;
         Flask flask;
         Gun gun;
-        MouseState oldMouseState;
-        KeyboardState oldKeyboardState;
-
 
         public Game1()
         {
@@ -64,6 +72,7 @@ namespace PlanetAid
             graphics.PreferredBackBufferHeight = 720;
             graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
+            Components.Add(new Input(this));
         }
 
         protected override void Initialize()
@@ -86,7 +95,14 @@ namespace PlanetAid
             nivel4Button = new Button(340, 350, 100, 100, "Buttons/Button_Level4");
             nivel5Button = new Button(600, 350, 100, 100, "Buttons/Button_Level5");
             nivel6Button = new Button(860, 350, 100, 100, "Buttons/Button_Level6");
+            nivel7Button = new Button(340, 200, 100, 100, "Buttons/Button_Level7");
+            nivel8Button = new Button(600, 200, 100, 100, "Buttons/Button_Level8");
+            nivel9Button = new Button(860, 200, 100, 100, "Buttons/Button_Level9");
+            nivel10Button = new Button(340, 350, 100, 100, "Buttons/Button_Level10");
+            nivel11Button = new Button(600, 350, 100, 100, "Buttons/Button_Level11");
+            nivel12Button = new Button(860, 350, 100, 100, "Buttons/Button_Level12");
             previousMenuButton = new Button(10, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_PreviewMenu");
+            nextMenuButton = new Button(GraphicsDevice.Viewport.Width - 110, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_Next");
 
             // Playing Buttons
             pauseButton = new Button(15, GraphicsDevice.Viewport.Height - 115, 100, 100, "Buttons/Button_Pause");
@@ -130,10 +146,18 @@ namespace PlanetAid
             nivel4Button.Load(Content);
             nivel5Button.Load(Content);
             nivel6Button.Load(Content);
+            nivel7Button.Load(Content);
+            nivel8Button.Load(Content);
+            nivel9Button.Load(Content);
+            nivel10Button.Load(Content);
+            nivel11Button.Load(Content);
+            nivel12Button.Load(Content);
             previousMenuButton.Load(Content);
+            nextMenuButton.Load(Content);
 
             // Playing Elements
             play_background = Content.Load<Texture2D>("background");
+            purpleDot = Content.Load<Texture2D>("purpledot");
             astronaut = Content.Load<Texture2D>("Shooter/Astronaut");
             gun.Load(Content);
             lvl1 = Content.Load<Texture2D>("HUD/Level1");
@@ -178,9 +202,7 @@ namespace PlanetAid
 
         protected override void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
-            KeyboardState newKeyboardState = Keyboard.GetState();
-            cursorPos = new Vector2(mouse.X, mouse.Y);
+            cursorPos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
 
             // Updating the game while in Start Menu
             // When game is at start menu it adds music and checks if we press
@@ -197,9 +219,10 @@ namespace PlanetAid
                 }
 
                 // When pressing the Play Button
-                if (playButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
+                if (playButton.clicked)
                 {
                     clickSound.Play();
+                    levelMenu1=true;
                     gameState = GameState.LevelMenu;
                     playButton.clicked = false;
                 }
@@ -209,7 +232,7 @@ namespace PlanetAid
                     this.Exit();
 
                 // When pressing name check button
-                if (checkButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
+                if (checkButton.clicked)
                 {
                     clickSound.Play();
                     checkedPlayerName = playerName;
@@ -221,14 +244,14 @@ namespace PlanetAid
                 checkButton.Update();
 
                 // Player name input
-                foreach (Keys k in newKeyboardState.GetPressedKeys())
+                foreach (Keys k in Keyboard.GetState().GetPressedKeys())
                 {
-                    if ((k >= Keys.A && k <= Keys.Z) && (oldKeyboardState.IsKeyUp(k)))
+                    if ((k >= Keys.A && k <= Keys.Z) && Input.IsKeyReleased(k))
                         playerName += k.ToString();
-                    if ((k == Keys.Enter) && (oldKeyboardState.IsKeyUp(k)))
+                    if ((k == Keys.Enter) && Input.IsKeyReleased(k))
                         checkedPlayerName = playerName;
 
-                        if((k == Keys.Back) && (oldKeyboardState.IsKeyUp(k)))
+                    if ((k == Keys.Back) && Input.IsKeyReleased(k))
                         {
                             if (playerName.Length < 0)
                                 playerName += "";
@@ -241,137 +264,144 @@ namespace PlanetAid
             // if the buttons are clicked and if so it changes the game state and the level.
             if (gameState == GameState.LevelMenu)
             {
-                nivel1Button.Update();
-                nivel2Button.Update();
-                nivel3Button.Update();
-                nivel4Button.Update();
-                nivel5Button.Update();
-                nivel6Button.Update();
-                previousMenuButton.Update();
-
-                if (nivel1Button.clicked)
+                if (levelMenu1==true)
                 {
-                    InitializeLevel(0);
-                    nivel1Button.clicked = false;
+
+                    if (nivel1Button.clicked)
+                    {
+                        InitializeLevel(0);
+                        nivel1Button.clicked = false;
+                    }
+
+                    if (nivel2Button.clicked)
+                    {
+                        InitializeLevel(1);
+                        nivel2Button.clicked = false;
+                    }
+
+                    if (nivel3Button.clicked)
+                    {
+                        InitializeLevel(2);
+                        nivel3Button.clicked = false;
+                    }
+
+                    if (nivel4Button.clicked)
+                    {
+                        InitializeLevel(3);
+                        nivel4Button.clicked = false;
+                    }
+
+                    if (nivel5Button.clicked)
+                    {
+                        InitializeLevel(4);
+                        nivel5Button.clicked = false;
+                    }
+
+                    if (nivel6Button.clicked)
+                    {
+                        InitializeLevel(5);
+                        nivel6Button.clicked = false;
+                    }
+
+                    if (previousMenuButton.clicked)
+                    {
+                        clickSound.Play();
+                        levelMenu1 = false;
+                        levelMenu2 = false;
+                        gameState = GameState.StartMenu;
+                        previousMenuButton.clicked = false;
+                    }
+
+                    if (nextMenuButton.clicked)
+                    {
+                        clickSound.Play();
+                        levelMenu1 = false;
+                        levelMenu2 = true;
+                        nextMenuButton.clicked = false;
+                    }
+                    nivel1Button.Update();
+                    nivel2Button.Update();
+                    nivel3Button.Update();
+                    nivel4Button.Update();
+                    nivel5Button.Update();
+                    nivel6Button.Update();
+                    previousMenuButton.Update();
+                    nextMenuButton.Update();
                 }
-
-                if (nivel2Button.clicked)
+                if (levelMenu2==true)
                 {
-                    InitializeLevel(1);
-                    nivel2Button.clicked = false;
-                }
-
-                if (nivel3Button.clicked)
-                {
-                    InitializeLevel(2);
-                    nivel3Button.clicked = false;
-                }
-
-                if (nivel4Button.clicked)
-                {
-                    InitializeLevel(3);
-                    nivel4Button.clicked = false;
-                }
-
-                if (nivel5Button.clicked)
-                {
-                    InitializeLevel(4);
-                    nivel5Button.clicked = false;
-                }
-
-                if (nivel6Button.clicked)
-                {
-                    InitializeLevel(5);
-                    nivel6Button.clicked = false;
-                }
-
-                if (previousMenuButton.clicked)
-                {
-                    clickSound.Play();
-                    gameState = GameState.StartMenu;
-                    oldMouseState = mouse;
-                    previousMenuButton.clicked = false;
+                    if (nivel7Button.clicked)
+                    {
+                        InitializeLevel(6);
+                        nivel7Button.clicked = false;
+                    }
+                    if (nivel8Button.clicked)
+                    {
+                        InitializeLevel(7);
+                        nivel8Button.clicked = false;
+                    }
+                    if (nivel9Button.clicked)
+                    {
+                        InitializeLevel(8);
+                        nivel9Button.clicked = false;
+                    }
+                    if (nivel10Button.clicked)
+                    {
+                        InitializeLevel(9);
+                        nivel10Button.clicked = false;
+                    }
+                    if (nivel11Button.clicked)
+                    {
+                        InitializeLevel(10);
+                        nivel11Button.clicked = false;
+                    }
+                    if (nivel12Button.clicked)
+                    {
+                        InitializeLevel(11);
+                        nivel12Button.clicked = false;
+                    }
+                    if (previousMenuButton.clicked)
+                    {
+                        clickSound.Play();
+                        levelMenu1 = true;
+                        levelMenu2 = false;
+                        previousMenuButton.clicked = false;
+                    }
+                    nivel7Button.Update();
+                    nivel8Button.Update();
+                    nivel9Button.Update();
+                    nivel10Button.Update();
+                    nivel11Button.Update();
+                    nivel12Button.Update();
+                    previousMenuButton.Update();
                 }
             }
 
             // Updating the game while in Playing, Pause and GameOver
             if (gameState == GameState.Playing)
             {
-                // In Pause Menu
-                if (isPaused == true)
+                // In Playing Mode.
+                if (isPlaying==true)
                 {
-                    // Click Resume Button to go back to the playing state
-                    if ((pauseResumeButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
-                    {
-                        isPaused = false;
-                        pauseResumeButton.clicked = false;
-                    }
-
-                    // Click Menu Button to go back to level menu
-                    if ((pauseMenuButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
-                    {
-                        isPaused = false;
-                        gameState = GameState.LevelMenu;
-                        pauseMenuButton.clicked = false;
-
-                    }
-
-                    // It checks if the retry button is clicked to reset the level
-                    if ((pauseRestartButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
-                    {
-                        isPaused = false;
-                        pauseRestartButton.clicked = false;
-                        InitializeLevel(Level.n_level);
-                    }
-                }
-                else if (currentLevel.IsFinished == true)
-                {
-                    finalRetryButton.Update();
-                    currentLevel.UpdateFinish();
-
-                    if ((Level.n_level < 0) || (Level.n_level > levelList.Count - 1))
-                    {
-                        gameState = GameState.LevelMenu;
-                        MediaPlayer.Play(menuSong);
-                    }
-                    else if (currentLevel.IsFinished == false)
-                        InitializeLevel(Level.n_level);
-
-                    // It checks if the retry button is clicked to reset the level
-                    if (finalRetryButton.clicked)
-                    {
-                        isPaused = false;
-                        finalRetryButton.clicked = false;
-                        InitializeLevel(Level.n_level);
-                    }
-                }
-                // In Playing Mode
-                else
-                {
-                    // It checks if the pause is clicked to go to the pause menu
-                    if (pauseButton.clicked && oldMouseState.LeftButton == ButtonState.Released)
+                    // It checks if the pause is clicked to go to the pause menu.
+                    if (pauseButton.clicked)
                     {
                         isPaused = true;
                         pauseButton.clicked = false;
-
                     }
-
-                    // Current level
-
 
                     // Shooting
                     // Pressing mouse left click and verifing if some variables are true
                     // shoots the flask by calculating direction vector between mouse position and
                     // flask position and gives him a velocity by multiplying the position w/ the speed.
-                    if ((mouse.LeftButton == ButtonState.Pressed) && (oldMouseState.LeftButton == ButtonState.Released))
+                    if (Input.IsMousePressed())
                     {
-                        if ((gun.canShoot) && (mouse.X > 200))
+                        if ((gun.canShoot) && (Mouse.GetState().X > 200))
                         {
                             flaskSound.Play(0.3f, 0.6f, 0);
                             flask = currentLevel.flaskList[currentFlask];
                             flask.position = new Vector2(70, 375);
-                            Vector2 direction = new Vector2(mouse.X - flask.position.X,
-                                                            mouse.Y - flask.position.Y);
+                            Vector2 direction = new Vector2(Mouse.GetState().X - flask.position.X, Mouse.GetState().Y - flask.position.Y);
                             direction.Normalize();
                             flask.velocity = direction * flask.speed;
                             currentFlask++;
@@ -381,7 +411,6 @@ namespace PlanetAid
                             currentLevel.attemptScore -= 10000;
                         }
                     }
-
 
                     // Collisions and Gravity Fields
                     if ((gun.canShoot == false) && (flask != null))
@@ -397,24 +426,19 @@ namespace PlanetAid
                             {
                                 if (currentLevel.IsFinished == false)
                                     gameState = GameState.GameOver;
-
                                 currentFlask = 0;
                             }
                         }
 
                         // For each flask in the list it calculates its update
                         foreach (Flask f in currentLevel.flaskList)
-                        {
                             f.Update(gameTime.ElapsedGameTime);
-                        }
                         // For each planet in the list
                         foreach (Planet p in currentLevel.planetList)
                         {
                             // Calculates flask gravity when entering planet atmosphere
                             if (flask.calculateGravity(p))
-                            {
                                 currentLevel.orbitingScore += 105;
-                            }
 
                             // When flask colide with any planet
                             if (Vector2.Distance(new Vector2(flask.myspace.Center.X, flask.myspace.Center.Y),
@@ -434,41 +458,91 @@ namespace PlanetAid
                                 {
                                     if (currentLevel.IsFinished == false)
                                         gameState = GameState.GameOver;
-
                                     currentFlask = 0;
                                 }
                             }
                         }
                     }
+
                     foreach (Planet p in currentLevel.planetList)
                         p.Update(gameTime.ElapsedGameTime);
                     gun.Update(gameTime.ElapsedGameTime);
+                    pauseButton.Update();
                 }
-                pauseButton.Update();
-                pauseResumeButton.Update();
-                pauseMenuButton.Update();
-                pauseRestartButton.Update();
-            }
+                // In Pause Menu
+                if (isPaused == true)
+                {
+                    isPlaying = false;
+                    // Click Resume Button to go back to the playing state
+                    if (pauseResumeButton.clicked)
+                    {
+                        isPaused = false;
+                        isPlaying = true;
+                        pauseResumeButton.clicked = false;
+                    }
 
+                    // Click Menu Button to go back to level menu
+                    if ((pauseMenuButton.clicked))
+                    {
+                        isPaused = false;
+                        isPlaying = false;
+                        gameState = GameState.LevelMenu;
+                        pauseMenuButton.clicked = false;
+
+                    }
+
+                    // It checks if the retry button is clicked to reset the level.
+                    if (pauseRestartButton.clicked)
+                    {
+                        isPaused = false;
+                        pauseRestartButton.clicked = false;
+                        InitializeLevel(Level.n_level);
+                    }
+                    pauseResumeButton.Update();
+                    pauseMenuButton.Update();
+                    pauseRestartButton.Update();
+                }
+                // In Finish Mode
+                if (currentLevel.IsFinished == true)
+                {
+                    isPlaying = false;
+                    finalRetryButton.Update();
+                    currentLevel.UpdateFinish();
+                    if ((Level.n_level < 0) || (Level.n_level > levelList.Count - 1))
+                    {
+                        gameState = GameState.LevelMenu;
+                        MediaPlayer.Play(menuSong);
+                    }
+                    else if (currentLevel.IsFinished == false)
+                        InitializeLevel(Level.n_level);
+
+                    // It checks if the retry button is clicked to reset the level.
+                    if (finalRetryButton.clicked)
+                    {
+                        isPaused = false;
+                        finalRetryButton.clicked = false;
+                        InitializeLevel(Level.n_level);
+                    }
+                }
+                
+            }
 
             if (gameState == GameState.GameOver)
             {
-                gameoverMenuButton.Update();
-                if ((gameoverMenuButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
+                if (gameoverMenuButton.clicked)
                 {
                     gameState = GameState.LevelMenu;
                     gameoverMenuButton.clicked = false;
                 }
-                gameoverRetryButton.Update();
-                if ((gameoverRetryButton.clicked) && (oldMouseState.LeftButton == ButtonState.Released))
+                if (gameoverRetryButton.clicked)
                 {
                     gameState = GameState.Playing;
                     InitializeLevel(Level.n_level);
                     gameoverRetryButton.clicked = false;
                 }
+                gameoverMenuButton.Update();
+                gameoverRetryButton.Update();
             }
-            oldMouseState = mouse;
-            oldKeyboardState = Keyboard.GetState();
             base.Update(gameTime);
         }
 
@@ -478,16 +552,15 @@ namespace PlanetAid
 
             if (gameState == GameState.StartMenu)
             {
-
                 spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                 spriteBatch.Draw(menuTitle, new Rectangle((GraphicsDevice.Viewport.Width/2)-(menuTitle.Width/2), 20, menuTitle.Width, menuTitle.Height), null, Color.White);
-                spriteBatch.Draw(menuPlanetBackground, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (menuPlanetBackground.Width / 2), 200, menuPlanetBackground.Width / (6 / 5), menuPlanetBackground.Height / (6 / 5)), Color.White);
+                spriteBatch.Draw(menuPlanetBackground, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (menuPlanetBackground.Width / 2), 200,
+                                                                        menuPlanetBackground.Width / (6 / 5), menuPlanetBackground.Height / (6 / 5)), Color.White);
                 spriteBatch.Draw(playerNameHUD, new Rectangle(0, 300,playerNameHUD.Width,playerNameHUD.Height), Color.White);
                 playButton.Draw(spriteBatch);
                 quitButton.Draw(spriteBatch);
                 checkButton.Draw(spriteBatch);
                 
-
                 if (checkedPlayerName == "")
                     spriteBatch.DrawString(font, playerName, new Vector2(25, 335), Color.Black);
                 else spriteBatch.DrawString(font, checkedPlayerName, new Vector2(25, 335), Color.Black);
@@ -495,25 +568,42 @@ namespace PlanetAid
 
             if (gameState == GameState.LevelMenu)
             {
-                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
-                                                                    , GraphicsDevice.Viewport.Height), Color.White);
-                nivel1Button.Draw(spriteBatch);
-                nivel2Button.Draw(spriteBatch);
-                nivel3Button.Draw(spriteBatch);
-                nivel4Button.Draw(spriteBatch);
-                nivel5Button.Draw(spriteBatch);
-                nivel6Button.Draw(spriteBatch);
-                previousMenuButton.Draw(spriteBatch);
+                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+                if (levelMenu1 == true)
+                {
+                    nivel1Button.Draw(spriteBatch);
+                    nivel2Button.Draw(spriteBatch);
+                    nivel3Button.Draw(spriteBatch);
+                    nivel4Button.Draw(spriteBatch);
+                    nivel5Button.Draw(spriteBatch);
+                    nivel6Button.Draw(spriteBatch);
+                    previousMenuButton.Draw(spriteBatch);
+                    nextMenuButton.Draw(spriteBatch);
+                }
+                if (levelMenu2 == true)
+                {
+                    nivel7Button.Draw(spriteBatch);
+                    nivel8Button.Draw(spriteBatch);
+                    nivel9Button.Draw(spriteBatch);
+                    nivel10Button.Draw(spriteBatch);
+                    nivel11Button.Draw(spriteBatch);
+                    nivel12Button.Draw(spriteBatch);
+                    previousMenuButton.Draw(spriteBatch);
+                }
             }
 
             if (gameState == GameState.Playing)
             {
                 spriteBatch.Draw(play_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
                                                                     , GraphicsDevice.Viewport.Height), Color.White);
-                
-
                 // Draws score
                 spriteBatch.DrawString(font, "Orbiting Score: " + currentLevel.orbitingScore.ToString(), new Vector2(15, 500), Color.White);
+
+                DrawTrajectory((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                // Draws shooted flask
+                if (flask != null)
+                    flask.Draw(spriteBatch);
 
                 // Draws planets on screeen
                 foreach (Planet p in currentLevel.planetList)
@@ -537,12 +627,8 @@ namespace PlanetAid
                 if (Level.n_level == 5)
                     spriteBatch.Draw(lvl6, new Rectangle(1100, 10, 175, 50), Color.White);
 
-
                 spriteBatch.Draw(astronaut, new Rectangle(-5, 5, 230, 480), Color.White);
 
-                // Draws shooted flask
-                if (flask != null)
-                    flask.Draw(spriteBatch);
 
                 gun.Draw(spriteBatch);
 
@@ -565,12 +651,10 @@ namespace PlanetAid
             }
             if (gameState == GameState.GameOver)
             {
-                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width
-                                                                    , GraphicsDevice.Viewport.Height), Color.White);
+                spriteBatch.Draw(menu_background, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
                 spriteBatch.Draw(gameoverHUD, new Rectangle((GraphicsDevice.Viewport.Width / 2) - (gameoverHUD.Width / 2), 100, gameoverHUD.Width, gameoverHUD.Height), Color.White);
                 gameoverMenuButton.Draw(spriteBatch);
-                gameoverRetryButton.Draw(spriteBatch);
-                
+                gameoverRetryButton.Draw(spriteBatch);   
             }
             spriteBatch.Draw(cursor, cursorPos, Color.White);
             spriteBatch.End();
@@ -588,6 +672,7 @@ namespace PlanetAid
             currentFlask = 0;
             gun.canShoot = true;
             isPaused = false;
+            isPlaying = true;
 
             currentLevel = levelList[lvl];
             Level.n_level = lvl;
@@ -595,8 +680,34 @@ namespace PlanetAid
 
             MediaPlayer.Stop();
             clickSound.Play();
-            oldMouseState = Mouse.GetState();
             gameState = GameState.Playing;
+        }
+
+        void DrawTrajectory(float time)
+        {
+            Vector2 dotInitialPos=new Vector2(70, 375);
+            Vector2 dotPos= dotInitialPos;
+            Vector2 dotDir = new Vector2(Mouse.GetState().X - dotInitialPos.X, Mouse.GetState().Y - dotInitialPos.Y);
+            dotDir.Normalize();
+            Vector2 dotVel= dotDir * 300;
+            Rectangle dotCube = new Rectangle((int)dotPos.X, (int)dotPos.Y, purpleDot.Width, purpleDot.Height);
+            while (GraphicsDevice.Viewport.Bounds.Contains(dotCube) == true)
+            {
+                foreach (Planet p in currentLevel.planetList)
+                {
+                    if (Vector2.Distance(dotPos, p.position) <= p.atmosphereRadius)
+                    {
+                        Vector2 acceleration = new Vector2(p.myspace.Center.X - dotCube.Center.X, p.myspace.Center.Y - dotCube.Center.Y);
+                        acceleration.Normalize();
+                        acceleration *= 9.8f;
+                        if (p.repel == true) dotVel -= acceleration;
+                        else dotVel += acceleration;
+                    }
+                }
+                dotPos += dotVel * time;
+                dotCube = new Rectangle((int)dotPos.X, (int)dotPos.Y, purpleDot.Width/2, purpleDot.Height/2);
+                spriteBatch.Draw(purpleDot, dotCube, Color.White);
+            }
         }
     }
 }
